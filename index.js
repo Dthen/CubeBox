@@ -3,7 +3,7 @@ const emojiCharacters = require('./emojiCharacters');
 const Discord = require('discord.js');
 const { prefix, greeting, serverid, roleschannel, rolesmessage, welcomechannel } = require('./config.json');
 const dotenv = require('dotenv');
-dotenv.conig();
+dotenv.config();
 ⃣
 const client = new Discord.Client();
 client.commands = new Discord.Collection()
@@ -19,7 +19,14 @@ client.once('ready', () => {
 	//Fetch the message people will react to choose their role to ensure it is cached and that the watcher will notice new reactions.
 	client.guilds.get('serverid').channels.get('roleschannel').fetchMessage('rolesmessage');
 	console.log('Roles message cached.')
-	//Add reactions to role message
+
+	//Prepare formatting for welcome message.
+	greeting.replace(/\${member}/g, member);
+	greeting.replace(/\${rolesChannel}/g, rolesChannel);
+	console.log('Welcome message ready.')
+	
+		//Add reactions to role message
+		// Not done yet
 });
 
 
@@ -88,7 +95,7 @@ client.on('message', message => {
 Client.on('messageReactionAdd', (reaction, user) => {
 	//check if reaction is by a bot
 	//if message id == rolesmessage {
-	//	for each entry in roles
+	//	message.reaction == 
 	// 	if reaction.emoji.name == roles
 	// 		member.roles.add(roles);
 	//	Next entry
