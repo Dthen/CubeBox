@@ -1,9 +1,10 @@
-const fs = require('fs');
+﻿const fs = require('fs');
+const emojiCharacters = require('./emojiCharacters');
 const Discord = require('discord.js');
-const { prefix, greeting } = require('./config.json');
+const { prefix, greeting, serverid, roleschannel, rolesmessage, welcomechannel } = require('./config.json');
 const dotenv = require('dotenv');
 dotenv.conig();
-
+⃣
 const client = new Discord.Client();
 client.commands = new Discord.Collection()
 
@@ -14,15 +15,21 @@ for (const file of commandFiles) {
 }
 
 client.once('ready', () => {
-	console.log('Ready!');
+	console.log('Logged in.');
+	//Fetch the message people will react to choose their role to ensure it is cached and that the watcher will notice new reactions.
+	client.guilds.get('serverid').channels.get('roleschannel').fetchMessage('rolesmessage');
+	console.log('Roles message cached.')
 });
 
+
+//Greeting new members
 client.on('guildMemberAdd', member => {
-	const channel = member.guild.channels.cache.find(ch => ch.name === 'welcome');
-	if (!channel) return;
-	channel.send(`Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the <#758174068322074634> channel to let us know what games you play. Enjoy your stay!`);
+	if (!welcomechannel) return;
+	welcomechannel.send(greeting);
+	console.log('Greeted new member $(member)');
 });
 
+//Command controller (I haven't really changed this from the example yet)
 client.on('message', message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
@@ -35,14 +42,14 @@ client.on('message', message => {
 	if (!command) return;
 
 	if (command.guildOnly && message.channel.type === 'dm') {
-		return message.reply('I can\'t execute that command inside DMs!');
+		return message.reply('Try again on the server.');
 	}
 
 	if (command.args && !args.length) {
 		let reply = `You didn't provide any arguments, ${message.author}!`;
 
 		if (command.usage) {
-			reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+			reply += `\nTry it like this: \`${prefix}${command.name} ${command.usage}\``;
 		}
 
 		return message.channel.send(reply);
@@ -61,7 +68,7 @@ client.on('message', message => {
 
 		if (now < expirationTime) {
 			const timeLeft = (expirationTime - now) / 1000;
-			return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
+			return message.reply(`No. Ask again in ${timeLeft.toFixed(1)} seconds.`);
 		}
 	}
 
@@ -72,9 +79,21 @@ client.on('message', message => {
 		command.execute(message, args);
 	} catch (error) {
 		console.error(error);
-		message.reply('there was an error trying to execute that command!');
+		message.reply('Error: Cubic error - dimensions not equal to 3.');
 	}
 });
+
+//Reaction roles
+Client.on('messageReactionAdd', (reaction, user) => {
+	//if message id == rolesmessage {
+	//	for each entry in roles
+	// if reaction.emoji.name == roles
+	// give user role
+	// member.roles.add(roles);
+	}
+	// increase position in both arrays by 1
+});
+	
 
 
 client.login('token');
