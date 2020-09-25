@@ -1,5 +1,4 @@
 ﻿const fs = require('fs');
-const emojiCharacters = require('./emojiCharacters');
 const Discord = require('discord.js');
 const { prefix, greeting, serverid, roleschannel, rolesmessage, welcomechannel } = require('./config.json');
 const dotenv = require('dotenv');
