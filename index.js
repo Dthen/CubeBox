@@ -19,6 +19,7 @@ client.once('ready', () => {
 	//Fetch the message people will react to choose their role to ensure it is cached and that the watcher will notice new reactions.
 	client.guilds.get('serverid').channels.get('roleschannel').fetchMessage('rolesmessage');
 	console.log('Roles message cached.')
+	//Add reactions to role message
 });
 
 
@@ -85,13 +86,14 @@ client.on('message', message => {
 
 //Reaction roles
 Client.on('messageReactionAdd', (reaction, user) => {
+	//check if reaction is by a bot
 	//if message id == rolesmessage {
 	//	for each entry in roles
-	// if reaction.emoji.name == roles
-	// give user role
-	// member.roles.add(roles);
-	}
-	// increase position in both arrays by 1
+	// 	if reaction.emoji.name == roles
+	// 		member.roles.add(roles);
+	//	Next entry
+	// }
+
 });
 	
 
