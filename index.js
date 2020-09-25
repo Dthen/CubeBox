@@ -91,17 +91,10 @@ client.on('message', message => {
 });
 
 //Reaction roles
-Client.on('messageReactionAdd', (reaction, user) => {
-	//check if reaction is by a bot
-	//if message id == rolesmessage {
-	//	message.reaction == 
-	// 	if reaction.emoji.name == roles
-	// 		member.roles.add(roles);
-	//	Next entry
-	// }
-
+client.on('messageReactionAdd', (reaction, user) => {
+	console.log(reaction);
 });
 	
 
 
-client.login('token');
+client.login(process.env.token);
