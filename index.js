@@ -3,7 +3,8 @@ const Discord = require('discord.js');
 const { prefix, greeting, serverid, roleschannel, rolesmessage, welcomechannel } = require('./config.json');
 const dotenv = require('dotenv');
 dotenv.config();
-⃣
+
+
 const client = new Discord.Client();
 client.commands = new Discord.Collection()
 
@@ -16,13 +17,13 @@ for (const file of commandFiles) {
 client.once('ready', () => {
 	console.log('Logged in.');
 	//Fetch the message people will react to choose their role to ensure it is cached and that the watcher will notice new reactions.
-	client.guilds.get('serverid').channels.get('roleschannel').fetchMessage('rolesmessage');
-	console.log('Roles message cached.')
+	//client.guilds.get(serverid).channels.get(roleschannel).fetchMessage(rolesmessage);
+	//console.log('Roles message cached.');
 
 	//Prepare formatting for welcome message.
-	greeting.replace(/\${member}/g, member);
-	greeting.replace(/\${rolesChannel}/g, rolesChannel);
-	console.log('Welcome message ready.')
+	//greeting.replace(/\${member}/g, member);
+	//greeting.replace(/\${rolesChannel}/g, rolesChannel);
+	console.log('Welcome message ready.');
 	
 		//Add reactions to role message
 		// Not done yet
@@ -91,10 +92,14 @@ client.on('message', message => {
 });
 
 //Reaction roles
-client.on('messageReactionAdd', (reaction, user) => {
-	console.log(reaction);
+client.on('messageReactionAdd', (messageReaction, user) => {
+	const emojiRole = roles[messageReaction.emoji.name];
+	if !emojiRole {
+		return;
+		}
+  member.addRole() client.[messageReaction.emoji.name] roles	
+//  
 });
-	
 
 
 client.login(process.env.token);

@@ -1,14 +1,14 @@
 {
-	"prefix": "!",
-	"greeting": "Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${roleschannel} channel to let us know what games you play. Enjoy your stay!",
-	"serverid": "149620737743781890",
-	"roleschannel": "758174068322074634",
-	"rolesmessage": "758174213696913480",
-	"welcomechannel": "758722756513890334"
+    "prefix": "!",
+    "greeting": "Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${roleschannel} channel to let us know what games you play. Enjoy your stay!",
+    "serverid": "149620737743781890",
+    "roleschannel": "758174068322074634",
+    "rolesmessage": "758174213696913480",
+    "welcomechannel": "758722756513890334",
+	"roles": {
+			":zero": "Spartans",
+			":one:": "Crewmates",
+			":two:": "Adventurers",
+			":three:": "Exiles"
+         }
 }
-const roles = {
-	":zero": "Spartans",
-	":one:": "Crewmates",
-	":two:": "Adventurers",
-	":three:": "Exiles"
-};
