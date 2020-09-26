@@ -4,6 +4,7 @@
     "rolesChannelName": "roles",
     "rolesMessage": "758174213696913480",
     "welcomeChannelName": "welcome",
+	"modRoleName": "Cubes",
 	"roles": {
 			"0️⃣": "Spartans",
 			"1️⃣": "Crewmates",
