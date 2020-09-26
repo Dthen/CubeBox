@@ -92,10 +92,14 @@ client.on('message', message => {
 
 //Adding reaction roles
 client.on('messageReactionAdd', (messageReaction, user) => {
+	//Check CubeBox has permission to manage roles
+	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
 	//Fetch GuildMember from User
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
-	//Derive needed role from used emoji
-	const emojiRole = roles[messageReaction.emoji.name];
+	//Get role's name from used emoji
+	const emojiRoleName = roles[messageReaction.emoji.name];
+	//Get role's ID from name
+	const emojiRole = messageReaction.message.guild.roles.cache.find(r => r.name === emojiRoleName);
 	//Only respond to reactions on the correct message
 	if (messageReaction.message.id != rolesMessage){
 		return;
@@ -106,15 +110,18 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 	}
 	//Add the role
 	emojiUser.roles.add(emojiRole);
-	user.send(`You are now one of the ${emojiRole}.`);
+	user.send(`You are now one of the ${emojiRoleName}.`);
 });
 //Removing reaction rolesis 
 client.on('messageReactionRemove', (messageReaction, user) => {
-	
+	//Check CubeBox has permission to manage roles
+	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
 	// Fetch GuildMember from User
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
-	//Derive needed role from used emoji
-	const emojiRole = roles[messageReaction.emoji.name];
+	//Get role's name from used emoji
+	const emojiRoleName = roles[messageReaction.emoji.name];
+	//Get role's ID from name
+	const emojiRole = messageReaction.message.guild.roles.cache.find(r => r.name === emojiRoleName);
 	//Only respond to reactions on the correct message
 	if (messageReaction.message.id != rolesMessage){
 		return;
@@ -125,8 +132,9 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 	}
 	//Remove the role
 	emojiUser.roles.remove(emojiRole);
-user.send(`You are no longer one of the ${emojiRole.name}.`);
+user.send(`You are no longer one of the ${emojiRoleName}.`);
 });
 
 
 client.login(process.env.token);
+
