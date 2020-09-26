@@ -1,6 +1,6 @@
 ﻿const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, greeting, serverd, rolesChannel, rolesMessage, welcomeChannel, roles } = require('./config.json');
+const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles } = require('./config.json');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -16,24 +16,21 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
 	console.log('Logged in.');
-	//Fetch the message people will react to choose their role to ensure it is cached and that the watcher will notice new reactions.
-	//client.guilds.channels.fetch(rolesChannel).message.fetch(rolesMessage);
-	//console.log('Roles message cached.');
-
-	//Prepare formatting for welcome message.
-	//greeting.replace(/\${member}/g, member);
-	//greeting.replace(/\${rolesChannel}/g, rolesChannel);
-	console.log('Welcome message ready.');
-	
-		//Add reactions to role message
-		// Not done yet
 });
 
 
 //Greeting new members
 client.on('guildMemberAdd', member => {
+	//Fetch channel IDs from names
+	const rolesChannel = member.guild.channels.cache.find(r => r.name === rolesChannelName);
+	const welcomeChannel= member.guild.channels.cache.find(r => r.name === welcomeChannelName);
+		//Prepare formatting for welcome message.
+	var greetingMessage = greeting.replace(/\${member}/g, member);
+	greetingMessage = greetingMessage.replace(/\${rolesChannelName}/g, rolesChannel);
+	//Check the channel exists
 	if (!welcomeChannel) return;
-	welcomeChannel.send(greeting);
+	//Greet the new user
+	welcomeChannel.send(greetingMessage);
 });
 
 //Command controller (I haven't really changed this from the example yet)

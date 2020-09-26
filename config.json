@@ -1,10 +1,9 @@
 {
     "prefix": "!",
-    "greeting": "Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${roleschannel} channel to let us know what games you play. Enjoy your stay!",
-    "serverId": "149620737743781890",
-    "rolesChannel": "758174068322074634",
+    "greeting": "Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${rolesChannelName} channel to let us know what games you play. Enjoy your stay!",
+    "rolesChannelName": "roles",
     "rolesMessage": "758174213696913480",
-    "welcomeChannel": "758722756513890334",
+    "welcomeChannelName": "welcome",
 	"roles": {
 			"0️⃣": "Spartans",
 			"1️⃣": "Crewmates",
