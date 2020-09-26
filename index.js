@@ -1,11 +1,11 @@
 ﻿const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, greeting, serverid, roleschannel, rolesmessage, welcomechannel } = require('./config.json');
+const { prefix, greeting, serverd, rolesChannel, rolesMessage, welcomeChannel, roles } = require('./config.json');
 const dotenv = require('dotenv');
 dotenv.config();
 
-
-const client = new Discord.Client();
+const cooldowns = new Discord.Collection();
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'] });
 client.commands = new Discord.Collection()
 
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -17,7 +17,7 @@ for (const file of commandFiles) {
 client.once('ready', () => {
 	console.log('Logged in.');
 	//Fetch the message people will react to choose their role to ensure it is cached and that the watcher will notice new reactions.
-	//client.guilds.get(serverid).channels.get(roleschannel).fetchMessage(rolesmessage);
+	//client.guilds.channels.fetch(rolesChannel).message.fetch(rolesMessage);
 	//console.log('Roles message cached.');
 
 	//Prepare formatting for welcome message.
@@ -32,9 +32,8 @@ client.once('ready', () => {
 
 //Greeting new members
 client.on('guildMemberAdd', member => {
-	if (!welcomechannel) return;
-	welcomechannel.send(greeting);
-	console.log('Greeted new member $(member)');
+	if (!welcomeChannel) return;
+	welcomeChannel.send(greeting);
 });
 
 //Command controller (I haven't really changed this from the example yet)
@@ -91,14 +90,42 @@ client.on('message', message => {
 	}
 });
 
-//Reaction roles
+//Adding reaction roles
 client.on('messageReactionAdd', (messageReaction, user) => {
+	//Fetch GuildMember from User
+	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
+	//Derive needed role from used emoji
 	const emojiRole = roles[messageReaction.emoji.name];
-	if !emojiRole {
+	//Only respond to reactions on the correct message
+	if (messageReaction.message.id != rolesMessage){
 		return;
-		}
-  member.addRole() client.[messageReaction.emoji.name] roles	
-//  
+	}
+	//Don't try to add roles which don't exist
+	if (!emojiRole) {
+		return;
+	}
+	//Add the role
+	emojiUser.roles.add(emojiRole);
+	user.send(`You are now one of the ${emojiRole}.`);
+});
+//Removing reaction rolesis 
+client.on('messageReactionRemove', (messageReaction, user) => {
+	
+	// Fetch GuildMember from User
+	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
+	//Derive needed role from used emoji
+	const emojiRole = roles[messageReaction.emoji.name];
+	//Only respond to reactions on the correct message
+	if (messageReaction.message.id != rolesMessage){
+		return;
+	}
+	//Don't try to remove roles which don't exist
+	if (!emojiRole) {
+		return;
+	}
+	//Remove the role
+	emojiUser.roles.remove(emojiRole);
+user.send(`You are no longer one of the ${emojiRole.name}.`);
 });
 
 

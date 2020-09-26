@@ -1,14 +1,15 @@
 {
     "prefix": "!",
     "greeting": "Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${roleschannel} channel to let us know what games you play. Enjoy your stay!",
-    "serverid": "149620737743781890",
-    "roleschannel": "758174068322074634",
-    "rolesmessage": "758174213696913480",
-    "welcomechannel": "758722756513890334",
+    "serverId": "149620737743781890",
+    "rolesChannel": "758174068322074634",
+    "rolesMessage": "758174213696913480",
+    "welcomeChannel": "758722756513890334",
 	"roles": {
-			":zero": "Spartans",
-			":one:": "Crewmates",
-			":two:": "Adventurers",
-			":three:": "Exiles"
+			"0️⃣": "738459106368553047",
+			"1️⃣": "755237708082970666",
+			"2️⃣": "758175044966416417",
+			"3️⃣": "758178125485047819",
+			"4️⃣": "758177996955189309"
          }
 }
