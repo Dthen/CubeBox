@@ -7,10 +7,11 @@ module.exports = {
 		execute(message, args) {
 		//Get Mod role from mod role name
 		const modRole = message.guild.roles.cache.find(r => r.name === modRoleName);
-		//Check the user has moderator permissions
-		if (!message.member.roles.cache.some(role =>role === modRole)) {
-			return message.reply('You\'re not allowed to do that.');
-		}
 
+		//Check the user has moderator permissions
+		if (!message.member.roles.cache.has(modRole.id)) {
+			return message.reply('You\'re not allowed to do that.')
+		}
+		//Command goes here
 	}
 }

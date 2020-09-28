@@ -25,8 +25,9 @@ client.on('guildMemberAdd', member => {
 	const rolesChannel = member.guild.channels.cache.find(r => r.name === rolesChannelName);
 	const welcomeChannel= member.guild.channels.cache.find(r => r.name === welcomeChannelName);
 		//Prepare formatting for welcome message.
-	var greetingMessage = greeting.replace(/\${member}/g, member);
-	greetingMessage = greetingMessage.replace(/\${rolesChannelName}/g, rolesChannel);
+	const greetingMessage = greeting
+	.replace(/\${member}/g, member)
+	.replace(/\${rolesChannelName}/g, rolesChannel);
 	//Check the channel exists
 	if (!welcomeChannel) return;
 	//Greet the new user
