@@ -51,7 +51,7 @@ client.on('message', message => {
 	}
 
 	if (command.args && !args.length) {
-		let reply = `You didn't provide any arguments, ${message.author}!`;
+		let reply = `No arguments, ${message.author}!`;
 
 		if (command.usage) {
 			reply += `\nTry it like this: \`${prefix}${command.name} ${command.usage}\``;
