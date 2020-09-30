@@ -4,12 +4,25 @@ module.exports = {
 	description: 'Plays rado stations.',
 	args: true,
 	execute(message, args) {
-        const stationUrl = stations[args[0].toLowerCase()] ;
+        let stationUrl = stations[args[0].toLowerCase()] ;
 
         if (args[0].toLowerCase() == 'on') {
             //if argument is 'on', pick a random radio station and play it
-            message.reply('Playing a random radio station:') 
+            let stationNames = Object.keys(stations);
+            let station = stationNames[Math.floor(Math.random()*stationNames.length)];
+            stationUrl = stations[station];
+            if (message.member.voice.channel) {
+                const connection = message.member.voice.channel.join()
+                .then(connection => {
+                     const dispatcher = connection.play(stationUrl);
+                    message.reply('Playing random radio station: ' + station);
+                });
             }
+            else {
+                return (message.reply('You need to join a voice channel first.'));
+            }
+            
+        }
         
         else if (args[0].toLowerCase() == 'off') {
             //if the first argument is 'off',//stop playing
@@ -26,7 +39,7 @@ module.exports = {
         } 
         else if (args[0].toLowerCase() == 'stations') {
             //if  argument is 'stations', print list of radio stations
-            message.reply('Here is a list of all available stations:');
+            message.reply('Here is a list of all available stations:\n' + Object.keys(stations));
         }
         else if (stationUrl) {
             //play that station
@@ -37,7 +50,7 @@ module.exports = {
                         message.reply('Playing radio station: ' + args[0]);
                     });
               } else {
-                return (message.reply('You need to join a voice channel first!'));
+                return (message.reply('You need to join a voice channel first.'));
               }
 
         }
