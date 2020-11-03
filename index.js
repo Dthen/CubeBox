@@ -1,6 +1,6 @@
 ﻿const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles } = require('./config.json');
+const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, } = require('./config.json');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -96,6 +96,10 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
 	//Fetch GuildMember from User
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
+	//Check we're not just reacting to ourselves adding the reactions for other people
+	if emojiUser = id {
+		return();
+	}
 	//Get role's name from used emoji
 	const emojiRoleName = roles[messageReaction.emoji.name];
 	//Get role's ID from name
@@ -116,7 +120,11 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 client.on('messageReactionRemove', (messageReaction, user) => {
 	//Check CubeBox has permission to manage roles
 	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
-	// Fetch GuildMember from User
+	// Fetch GuildMember from User	
+	//Check we're not just reacting to ourselves adding the reactions for other people
+	if emojiUser = id {
+		return();
+	}
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
 	//Get role's name from used emoji
 	const emojiRoleName = roles[messageReaction.emoji.name];
