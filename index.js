@@ -1,6 +1,6 @@
 ﻿const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, } = require('./config.json');
+const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, rolesChannelId } = require('./config.json');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -17,7 +17,6 @@ for (const file of commandFiles) {
 client.once('ready', () => {
 	console.log('Logged in.');
 	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
-	Object.keys(roles).forEach(role => rolesMessage.react(role));
 });
 
 
@@ -94,16 +93,21 @@ client.on('message', message => {
 client.on('messageReactionAdd', (messageReaction, user) => {
 	//Check CubeBox has permission to manage roles
 	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
+
 	//Fetch GuildMember from User
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
+
 	//Check we're not just reacting to ourselves adding the reactions for other people
-	if emojiUser = id {
-		return();
+	if (emojiUser.id = id) {
+		return;
 	}
+
 	//Get role's name from used emoji
 	const emojiRoleName = roles[messageReaction.emoji.name];
+
 	//Get role's ID from name
 	const emojiRole = messageReaction.message.guild.roles.cache.find(r => r.name === emojiRoleName);
+
 	//Only respond to reactions on the correct message
 	if (messageReaction.message.id != rolesMessage){
 		return;
@@ -122,8 +126,8 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
 	// Fetch GuildMember from User	
 	//Check we're not just reacting to ourselves adding the reactions for other people
-	if emojiUser = id {
-		return();
+	if (emojiUser.id = id) {
+		return;
 	}
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
 	//Get role's name from used emoji

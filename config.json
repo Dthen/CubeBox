@@ -1,4 +1,5 @@
 {
+	"rolesChannelId" : "758174068322074634",
 	"id": "758825122151792711",
     "prefix": "!",
     "greeting": "Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${rolesChannelName} channel to let us know what games you play. Enjoy your stay!",
