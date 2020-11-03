@@ -16,6 +16,8 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
 	console.log('Logged in.');
+	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
+	Object.keys(roles).forEach(role => rolesMessage.react(role));
 });
 
 
