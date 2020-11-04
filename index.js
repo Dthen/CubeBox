@@ -16,6 +16,7 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
 	console.log('Logged in.');
+
 	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
 	client.channels.fetch(rolesChannelId) 
 		.then (channel => channel.fetch(rolesMessage))
@@ -92,18 +93,25 @@ client.on('message', message => {
 	}
 });
 
+/*
+Regarding reactions. Currently these events are only used for roles, but later, when we implement polling, event management,
+twitch integration, etc., we will need to devise a sane way of 
+*/
+
 //Adding reaction roles
 client.on('messageReactionAdd', (messageReaction, user) => {
+
+	//Only respond to reactions on the correct message
+	if (messageReaction.message.id != rolesMessage) return;
+	
 	//Check CubeBox has permission to manage roles
 	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
 
 	//Fetch GuildMember from User
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
 
-	//Check we're not just reacting to ourselves adding the reactions for other people
-	if (emojiUser.id === id) {
-		return;
-	}
+	//Check the user adding the reaction is not the bot so the bot doesn't change its own roles.
+	if (emojiUser.id === id) return;
 
 	//Get role's name from used emoji
 	const emojiRoleName = roles[messageReaction.emoji.name];
@@ -111,50 +119,44 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 	//Get role's ID from name
 	const emojiRole = messageReaction.message.guild.roles.cache.find(r => r.name === emojiRoleName);
 
-	//Only respond to reactions on the correct message
-	if (messageReaction.message.id != rolesMessage){
-		return;
-	}
 	//Don't try to add roles which don't exist
-	if (!emojiRole) {
-		return;
-	}
-	//Add the role
+	if (!emojiRole) return;
+	
+	//Add the role and inform the user
 	emojiUser.roles.add(emojiRole);
 	user.send(`You are now one of the ${emojiRoleName}.`);
 });
-//Removing reaction rolesis 
+
+//Removing reaction roles
 client.on('messageReactionRemove', (messageReaction, user) => {
+	
+	//Only respond to reactions on the correct message
+	if (messageReaction.message.id != rolesMessage)	return;
 
 	//Check CubeBox has permission to manage roles
-	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.')
+	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
 
 	// Fetch GuildMember from User	
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
 
-	//Check we're not just reacting to ourselves adding the reactions for other people
-	if (emojiUser.id === id) {
-		return;
-	}
+	//Check the user adding the reaction is not the bot so the bot doesn't change its own roles.
+	if (emojiUser.id === id) return;
+
 	//Get role's name from used emoji
 	const emojiRoleName = roles[messageReaction.emoji.name];
 
 	//Get role's ID from name
 	const emojiRole = messageReaction.message.guild.roles.cache.find(r => r.name === emojiRoleName);
 
-	//Only respond to reactions on the correct message
-	if (messageReaction.message.id != rolesMessage){
-		return;
-	}
 	//Don't try to remove roles which don't exist
-	if (!emojiRole) {
-		return;
-	}
-	//Remove the role
+	if (!emojiRole) return;
+
+	//Remove the role and inform the user
 	emojiUser.roles.remove(emojiRole);
-user.send(`You are no longer one of the ${emojiRoleName}.`);
+	user.send(`You are no longer one of the ${emojiRoleName}.`);
+
 });
 
-
+//Log in to Discord
 client.login(process.env.token);
 
