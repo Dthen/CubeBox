@@ -3,11 +3,10 @@ const Discord = require('discord.js');
 const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, rolesChannelId } = require('./config.json');
 const dotenv = require('dotenv');
 dotenv.config();
-
 const cooldowns = new Discord.Collection();
-const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
-client.commands = new Discord.Collection()
+const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
+client.commands = new Discord.Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
@@ -95,7 +94,8 @@ client.on('message', message => {
 
 /*
 Regarding reactions. Currently these events are only used for roles, but later, when we implement polling, event management,
-twitch integration, etc., we will need to devise a sane way of 
+twitch integration, etc., we may need a sane way of working out which we want. There is also a way to wait for reactions on 
+specific messages as well, though, so this may be a non-issue.
 */
 
 //Adding reaction roles
@@ -104,7 +104,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 	//Only respond to reactions on the correct message
 	if (messageReaction.message.id != rolesMessage) return;
 	
-	//Check CubeBox has permission to manage roles
+	//Check client has permission to manage roles
 	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
 
 	//Fetch GuildMember from User
@@ -133,7 +133,7 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 	//Only respond to reactions on the correct message
 	if (messageReaction.message.id != rolesMessage)	return;
 
-	//Check CubeBox has permission to manage roles
+	//Check client has permission to manage roles
 	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
 
 	// Fetch GuildMember from User	
