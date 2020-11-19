@@ -1,3 +1,4 @@
+const {rolesMessage} = require('./config.json');
 module.exports = (messageReaction, user) => {
     //Only respond to reactions on the correct message
 	if (messageReaction.message.id != rolesMessage)	throw 'noRolesMessage';

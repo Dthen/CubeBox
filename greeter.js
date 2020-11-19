@@ -1,4 +1,3 @@
-const { repeat } = require('ffmpeg-static');
 const {greeting, rolesChannelName, welcomeChannelName, } = require('./config.json');
 module.exports = (member) => {
 		
@@ -13,7 +12,7 @@ module.exports = (member) => {
 	const greetingMessage = greeting
 		.replace(/\${member}/g, member)
 		.replace(/\${rolesChannelName}/g, rolesChannel);
-		
+
 	//Greet the new user
     welcomeChannel.send(greetingMessage);
 }

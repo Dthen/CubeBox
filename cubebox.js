@@ -100,21 +100,29 @@ specific messages as well, though, so this may be a non-issue.
 
 //Adding reaction roles
 client.on('messageReactionAdd', (messageReaction, user) => {
-	try {rolesreactionhandler(messageReaction, user)}
+	try {
+		const { emojiUser, emojiRole } = rolesreactionhandler(messageReaction, user);
+		//Add the role and inform the user
+		emojiUser.roles.add(emojiRole);
+		user.send(`You are now one of the ${emojiRoleName}.`);}
 	catch (error) {
 		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
 		return;
 	}
-	//Add the role and inform the user
-	emojiUser.roles.add(emojiRole);
-	user.send(`You are now one of the ${emojiRoleName}.`);
+
 });
 //Removing reaction roles
 client.on('messageReactionRemove', (messageReaction, user) => {
-
-	//Remove the role and inform the user
-	emojiUser.roles.remove(emojiRole);
-	user.send(`You are no longer one of the ${emojiRoleName}.`);
+	try {
+		const { emojiUser, emojiRole } = rolesreactionhandler(messageReaction, user);
+		//Remove the role and inform the user
+		emojiUser.roles.remove(emojiRole);
+		user.send(`You are no longer one of the ${emojiRoleName}.`);
+		}
+	catch (error) {
+		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
+		return;
+	}
 
 });
 
