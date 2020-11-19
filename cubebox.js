@@ -8,6 +8,7 @@ require('dotenv').config();
 //import internal dependencies
 const greeter = require ('./greeter.js');
 const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, rolesChannelId } = require('./config.json');
+const rolesreactionhandler = require('./rolesreactionhandler.js');
 
 //Create the bot's Discord client
 const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
@@ -99,56 +100,17 @@ specific messages as well, though, so this may be a non-issue.
 
 //Adding reaction roles
 client.on('messageReactionAdd', (messageReaction, user) => {
-
-	//Only respond to reactions on the correct message
-	if (messageReaction.message.id != rolesMessage) return;
-	
-	//Check client has permission to manage roles
-	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
-
-	//Fetch GuildMember from User
-	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
-
-	//Check the user adding the reaction is not the bot so the bot doesn't change its own roles.
-	if (emojiUser.id === id) return;
-
-	//Get role's name from used emoji
-	const emojiRoleName = roles[messageReaction.emoji.name];
-
-	//Get role's ID from name
-	const emojiRole = messageReaction.message.guild.roles.cache.find(r => r.name === emojiRoleName);
-
-	//Don't try to add roles which don't exist
-	if (!emojiRole) return;
-	
+	try {rolesreactionhandler(messageReaction, user)}
+	catch (error) {
+		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
+		return;
+	}
 	//Add the role and inform the user
 	emojiUser.roles.add(emojiRole);
 	user.send(`You are now one of the ${emojiRoleName}.`);
 });
-
 //Removing reaction roles
 client.on('messageReactionRemove', (messageReaction, user) => {
-	
-	//Only respond to reactions on the correct message
-	if (messageReaction.message.id != rolesMessage)	return;
-
-	//Check client has permission to manage roles
-	if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) return user.send('I\'m not allowed to change your role.');
-
-	// Fetch GuildMember from User	
-	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
-
-	//Check the user adding the reaction is not the bot so the bot doesn't change its own roles.
-	if (emojiUser.id === id) return;
-
-	//Get role's name from used emoji
-	const emojiRoleName = roles[messageReaction.emoji.name];
-
-	//Get role's ID from name
-	const emojiRole = messageReaction.message.guild.roles.cache.find(r => r.name === emojiRoleName);
-
-	//Don't try to remove roles which don't exist
-	if (!emojiRole) return;
 
 	//Remove the role and inform the user
 	emojiUser.roles.remove(emojiRole);
