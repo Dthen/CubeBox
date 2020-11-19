@@ -3,7 +3,7 @@ const fs = require('fs');
 const Discord = require('discord.js');
 
 //Import environment variables
-require('dotenv').config;
+require('dotenv').config();
 
 //import internal dependencies
 const greeter = require ('./greeter.js');
