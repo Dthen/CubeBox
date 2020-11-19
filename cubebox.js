@@ -1,24 +1,30 @@
 ﻿//Import native mode modules
 const fs = require('fs');
 const Discord = require('discord.js');
+
+//Import environment variables
+require('dotenv').config;
+
+
+//import internal dependencies
+const greeter = require ('./greeter.js');
 const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, rolesChannelId } = require('./config.json');
-const dotenv = require('dotenv');
-dotenv.config();
+
+
+//Declare constants for Command Handler
 const cooldowns = new Discord.Collection();
 const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
-
+//Importa Command Files
 client.commands = new Discord.Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);
-	
-//import internal dependencies
-const greeter = require ('./greeter.js');
 
 }
 
+//Log in and get going
 client.once('ready', () => {
 	console.log('Logged in.');
 
@@ -30,12 +36,7 @@ client.once('ready', () => {
 
 
 //Greeting new members
-client.on('guildMemberAdd'), greeter;
-	
-
-	
-
-
+client.on('guildMemberAdd', greeter);	
 
 //Command controller (I haven't really changed this from the example yet)
 client.on('message', message => {
