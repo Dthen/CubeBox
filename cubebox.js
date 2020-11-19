@@ -1,27 +1,26 @@
-﻿//Import native mode modules
+﻿//Import native Node modules
 const fs = require('fs');
 const Discord = require('discord.js');
 
 //Import environment variables
 require('dotenv').config;
 
-
 //import internal dependencies
 const greeter = require ('./greeter.js');
 const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, rolesChannelId } = require('./config.json');
 
-
-//Declare constants for Command Handler
-const cooldowns = new Discord.Collection();
+//Create the bot's Discord client
 const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
-//Importa Command Files
+//Declare constants for command handler
+const cooldowns = new Discord.Collection();
+
+//Import command Files for command handler
 client.commands = new Discord.Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);
-
 }
 
 //Log in and get going
