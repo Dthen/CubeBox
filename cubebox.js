@@ -7,7 +7,7 @@ require('dotenv').config();
 
 //import internal dependencies
 const greeter = require ('./greeter.js');
-const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, rolesChannelId } = require('./config.json');
+const { prefix, rolesMessage, roles, rolesChannelId } = require('./config.json');
 const rolesreactionhandler = require('./rolesreactionhandler.js');
 
 //Create the bot's Discord client
@@ -118,7 +118,7 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 		//Remove the role and inform the user
 		emojiUser.roles.remove(emojiRole);
 		user.send(`You are no longer one of the ${emojiRoleName}.`);
-		}
+	}
 	catch (error) {
 		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
 		return;
