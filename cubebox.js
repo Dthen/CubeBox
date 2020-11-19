@@ -1,4 +1,5 @@
-﻿const fs = require('fs');
+﻿//Import native mode modules
+const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, greeting, rolesChannelName, rolesMessage, welcomeChannelName, roles, id, rolesChannelId } = require('./config.json');
 const dotenv = require('dotenv');
@@ -6,11 +7,16 @@ dotenv.config();
 const cooldowns = new Discord.Collection();
 const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
+
 client.commands = new Discord.Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);
+	
+//import internal dependencies
+const greeter = require ('./greeter.js');
+
 }
 
 client.once('ready', () => {
@@ -24,19 +30,12 @@ client.once('ready', () => {
 
 
 //Greeting new members
-client.on('guildMemberAdd', member => {
-	//Fetch channel IDs from names
-	const rolesChannel = member.guild.channels.cache.find(r => r.name === rolesChannelName);
-	const welcomeChannel= member.guild.channels.cache.find(r => r.name === welcomeChannelName);
-		//Prepare formatting for welcome message.
-	const greetingMessage = greeting
-	.replace(/\${member}/g, member)
-	.replace(/\${rolesChannelName}/g, rolesChannel);
-	//Check the channel exists
-	if (!welcomeChannel) return;
-	//Greet the new user
-	welcomeChannel.send(greetingMessage);
-});
+client.on('guildMemberAdd'), greeter;
+	
+
+	
+
+
 
 //Command controller (I haven't really changed this from the example yet)
 client.on('message', message => {
