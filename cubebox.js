@@ -7,8 +7,8 @@ require('dotenv').config();
 
 //import internal dependencies
 const greeter = require ('./greeter.js');
-const { prefix, rolesMessage, roles, rolesChannelId } = require('./config.json');
-const rolesreactionhandler = require('./rolesreactionhandler.js');
+const { prefix, rolesMessage, roles, rolesChannelId, liveRoleId } = require('./config.json');
+const reactionRolesHandler = require('./reactionRolesHandler.js');
 
 //Create the bot's Discord client
 const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
@@ -101,7 +101,7 @@ specific messages as well, though, so this may be a non-issue.
 //Adding reaction roles
 client.on('messageReactionAdd', (messageReaction, user) => {
 	try {
-		const { emojiUser, emojiRole } = rolesreactionhandler(messageReaction, user);
+		const { emojiUser, emojiRole } = reactionRolesHandler(messageReaction, user);
 		//Add the role and inform the user
 		emojiUser.roles.add(emojiRole);
 		user.send(`You are now one of the ${emojiRoleName}.`);}
@@ -114,7 +114,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 //Removing reaction roles
 client.on('messageReactionRemove', (messageReaction, user) => {
 	try {
-		const { emojiUser, emojiRole } = rolesreactionhandler(messageReaction, user);
+		const { emojiUser, emojiRole } = reactionRolesHandler(messageReaction, user);
 		//Remove the role and inform the user
 		emojiUser.roles.remove(emojiRole);
 		user.send(`You are no longer one of the ${emojiRoleName}.`);
@@ -126,6 +126,28 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 
 });
 
+/*Twitch Integration works by checking the status of  all the members whenever one changes,
+this is done to see whose Dicord Status says they are streaming.
+ If they are they are given the "Live" role.
+ Checking status updates of all members whenever one changes is also used to determine
+ whether or not a stream has gone offline. This is done so the "Live" can be removed. 
+*/
+//Twitch Integration
+
+client.on("presenceUpdate", (oldPresence, newPresence) => {
+	//On a new status update, check whether they were previously streaming and if so, remove the "live" role.
+	if (!oldPresence.activities) return;
+	//Check they were streaming, if so, remove the "Live" role
+
+	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
+	if (!newPresence.activities) return;
+	//If the activity is streaming, give the user the "Live" role 
+	newPresence.activities.forEach(activity => {
+		if (activity.type == "STREAMING") newPresence.user.roles.add(liveRoleId);
+	});
+});
+
+
+
 //Log in to Discord
 client.login(process.env.token);
-
