@@ -1,4 +1,4 @@
-const {rolesMessageId} = require('./config.json');
+const {rolesMessageId, roles} = require('./config.json');
 module.exports = (messageReaction, user) => {
     //Only respond to reactions on the correct message
 	if (messageReaction.message.id != rolesMessageId)	throw 'noRolesMessage';
@@ -9,8 +9,8 @@ module.exports = (messageReaction, user) => {
 	// Fetch GuildMember from User	
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
 
-	//Check the user adding the reaction is not the bot so the bot doesn't change its own roles.
-	if (emojiUser.id === id) throw 'ownEmoji';
+	//Check the user adding the reaction is not a bot
+	if (messageReaction.message.author.bot) throw 'botEmoji';
 
 	//Get role's name from used emoji
 	const emojiRoleName = roles[messageReaction.emoji.name];
@@ -21,5 +21,5 @@ module.exports = (messageReaction, user) => {
 	//Don't try to change roles which don't exist
     if (!emojiRole) throw 'notEmojiRole';
 
-    return {emojiRole, emojiUser};
+    return {emojiRole, emojiUser, emojiRoleName};
 }
