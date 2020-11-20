@@ -9,7 +9,7 @@ require('dotenv').config();
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
 //import internal dependencies
-const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId, botId } = require('./config.json');
+const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config.json');
 const greeter = require ('./greeter.js')
 const reactionRolesHandler = require('./reactionRolesHandler.js');
 
@@ -127,7 +127,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 
 client.on('messageReactionRemove', (messageReaction, user) => {
 	try {
-		const { emojiUser, emojiRole } = reactionRolesHandler(messageReaction, user);
+		const { emojiUser, emojiRole, emojiRole } = reactionRolesHandler(messageReaction, user);
 		//Remove the role and inform the user
 		emojiUser.roles.remove(emojiRole);
 		user.send(`You are no longer one of the ${emojiRoleName}.`);
