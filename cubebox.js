@@ -9,7 +9,7 @@ require('dotenv').config();
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
 //import internal dependencies
-const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config.json');
+const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId, botId } = require('./config.json');
 const greeter = require ('./greeter.js')
 const reactionRolesHandler = require('./reactionRolesHandler.js');
 
@@ -30,18 +30,18 @@ for (const file of commandFiles) {
 client.once('ready', () => {
 	console.log('Logged in.');
 
-//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
-client.channels.fetch(rolesChannelId) 
-.then (channel => channel.fetch())
-.then (channel => channel.messages.fetch(rolesMessageId))
-.then(messageCollection => {
-	let message = messageCollection;
-	if (messageCollection instanceof Discord.TextChannel) {
-	  message = messageCollection.first();
-	}
-  
-	Object.keys(roles).forEach(role => message.react(role));
-	console.log('Reacted to Roles Message.')
+	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
+	client.channels.fetch(rolesChannelId) 
+		.then (channel => channel.fetch())
+		.then (channel => channel.messages.fetch(rolesMessageId))
+		.then(messageCollection => {
+			let message = messageCollection;
+			if (messageCollection instanceof Discord.TextChannel) {
+	  			message = messageCollection.first();
+			}
+			Object.keys(roles).forEach(role => message.react(role));
+			console.log('Reacted to Roles Message.')
+		});
 });
 
 
@@ -109,6 +109,7 @@ specific messages as well, though, so this may be a non-issue.
 */
 
 //Adding reaction roles
+
 client.on('messageReactionAdd', (messageReaction, user) => {
 	try {
 		const { emojiUser, emojiRole, emojiRoleName } = reactionRolesHandler(messageReaction, user);
@@ -123,6 +124,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 
 });
 //Removing reaction roles
+
 client.on('messageReactionRemove', (messageReaction, user) => {
 	try {
 		const { emojiUser, emojiRole } = reactionRolesHandler(messageReaction, user);
@@ -136,7 +138,6 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 		return;
 	}
 
-});
 });
 
 /*Twitch Integration works by checking the status of  all the members whenever one changes,
