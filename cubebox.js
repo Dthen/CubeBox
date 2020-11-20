@@ -32,6 +32,7 @@ client.once('ready', () => {
 
 //React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
 client.channels.fetch(rolesChannelId) 
+.then (channel => channel.fetch())
 .then (channel => channel.messages.fetch(rolesMessage))
 .then (message => Object.keys(roles).forEach(role => message.react(role)));
 });
