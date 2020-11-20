@@ -9,7 +9,7 @@ require('dotenv').config();
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
 //import internal dependencies
-const { prefix, rolesMessage, roles, rolesChannelId, liveRoleId } = require('./config.json');
+const { prefix, rolesMessageIdId, roles, rolesChannelId, liveRoleId } = require('./config.json');
 const greeter = require ('./greeter.js')
 const reactionRolesHandler = require('./reactionRolesHandler.js');
 
@@ -33,8 +33,11 @@ client.once('ready', () => {
 //React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
 client.channels.fetch(rolesChannelId) 
 .then (channel => channel.fetch())
-.then (channel => channel.messages.fetch(rolesMessage))
-.then (message => Object.keys(roles).forEach(role => message.react(role)));
+.then (channel => channel.messages.fetch(rolesMessageIdId))
+.then(messageCollection => {
+	const message = messageCollection.first();
+  
+	Object.keys(roles).forEach(role => message.react(role));
 });
 
 
@@ -127,6 +130,7 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 		return;
 	}
 
+});
 });
 
 /*Twitch Integration works by checking the status of  all the members whenever one changes,

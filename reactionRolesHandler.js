@@ -1,7 +1,7 @@
-const {rolesMessage} = require('./config.json');
+const {rolesMessageId} = require('./config.json');
 module.exports = (messageReaction, user) => {
     //Only respond to reactions on the correct message
-	if (messageReaction.message.id != rolesMessage)	throw 'noRolesMessage';
+	if (messageReaction.message.id != rolesMessageId)	throw 'noRolesMessage';
 
 	//Check client has permission to manage roles
     if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) throw 'noPermissions';
