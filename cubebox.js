@@ -5,13 +5,13 @@ const Discord = require('discord.js');
 //Import environment variables
 require('dotenv').config();
 
+//Create the bot's Discord client
+const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
+
 //import internal dependencies
 const greeter = require ('./greeter.js');
 const { prefix, rolesMessage, roles, rolesChannelId, liveRoleId } = require('./config.json');
 const reactionRolesHandler = require('./reactionRolesHandler.js');
-
-//Create the bot's Discord client
-const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
 //Declare constants for command handler
 const cooldowns = new Discord.Collection();
@@ -136,9 +136,12 @@ this is done to see whose Dicord Status says they are streaming.
 
 client.on("presenceUpdate", (oldPresence, newPresence) => {
 	//On a new status update, check whether they were previously streaming and if so, remove the "live" role.
-	if (!oldPresence.activities) return;
-	//Check they were streaming, if so, remove the "Live" role
-
+	if (oldPresence.activities){  
+		//Check they were streaming, if so, remove the "Live" role
+		oldPresence.activities.forEach(activity => {
+			if (activity.type == "STREAMING") oldPresence.user.roles.remove(liveRoleId);
+		});
+	}	
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
 	if (!newPresence.activities) return;
 	//If the activity is streaming, give the user the "Live" role 
