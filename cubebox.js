@@ -33,7 +33,7 @@ client.once('ready', () => {
 //React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
 client.channels.fetch(rolesChannelId) 
 .then (channel => channel.fetch())
-.then (channel => channel.messages.fetch(rolesMessageIdId))
+.then (channel => channel.messages.fetch(rolesMessageId))
 .then(messageCollection => {
 	const message = messageCollection.first();
   
@@ -108,7 +108,7 @@ specific messages as well, though, so this may be a non-issue.
 //Adding reaction roles
 client.on('messageReactionAdd', (messageReaction, user) => {
 	try {
-		const { emojiUser, emojiRole } = reactionRolesHandler(messageReaction, user);
+		const { emojiUser, emojiRole, emojiRoleName } = reactionRolesHandler(messageReaction, user);
 		//Add the role and inform the user
 		emojiUser.roles.add(emojiRole);
 		user.send(`You are now one of the ${emojiRoleName}.`);}
