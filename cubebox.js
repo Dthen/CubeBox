@@ -6,11 +6,11 @@ const Discord = require('discord.js');
 require('dotenv').config();
 
 //Create the bot's Discord client
-const client = new Discord.client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
+const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
 //import internal dependencies
-const greeter = require ('./greeter.js');
 const { prefix, rolesMessage, roles, rolesChannelId, liveRoleId } = require('./config.json');
+const greeter = require ('./greeter.js')
 const reactionRolesHandler = require('./reactionRolesHandler.js');
 
 //Declare constants for command handler
@@ -19,6 +19,8 @@ const cooldowns = new Discord.Collection();
 //Import command Files for command handler
 client.commands = new Discord.Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+//Command Handler
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);
@@ -28,10 +30,10 @@ for (const file of commandFiles) {
 client.once('ready', () => {
 	console.log('Logged in.');
 
-	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
-	client.channels.fetch(rolesChannelId) 
-		.then (channel => channel.fetch(rolesMessage))
-		.then (message => Object.keys(roles).forEach(role => message.react(role)));
+//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
+client.channels.fetch(rolesChannelId) 
+.then (channel => channel.messages.fetch(rolesMessage))
+.then (message => Object.keys(roles).forEach(role => message.react(role)));
 });
 
 
