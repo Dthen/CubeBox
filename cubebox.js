@@ -9,7 +9,7 @@ require('dotenv').config();
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
 //import internal dependencies
-const { prefix, rolesMessageIdId, roles, rolesChannelId, liveRoleId } = require('./config.json');
+const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config.json');
 const greeter = require ('./greeter.js')
 const reactionRolesHandler = require('./reactionRolesHandler.js');
 
