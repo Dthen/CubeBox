@@ -38,6 +38,7 @@ client.channels.fetch(rolesChannelId)
 	const message = messageCollection.first();
   
 	Object.keys(roles).forEach(role => message.react(role));
+	console.log('Reacted to Roles Message.')
 });
 
 
@@ -113,6 +114,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 		user.send(`You are now one of the ${emojiRoleName}.`);}
 	catch (error) {
 		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
+		console.log(error);
 		return;
 	}
 
@@ -127,6 +129,7 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 	}
 	catch (error) {
 		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
+		console.log(error);
 		return;
 	}
 
