@@ -35,7 +35,10 @@ client.channels.fetch(rolesChannelId)
 .then (channel => channel.fetch())
 .then (channel => channel.messages.fetch(rolesMessageId))
 .then(messageCollection => {
-	const message = messageCollection.first();
+	let message = messageCollection;
+	if (messageCollection instanceof Discord.TextChannel) {
+	  message = messageCollection.first();
+	}
   
 	Object.keys(roles).forEach(role => message.react(role));
 	console.log('Reacted to Roles Message.')
