@@ -4,10 +4,10 @@
     "prefix": "!",
     "greeting": "Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${rolesChannelName} channel to let us know what games you play. Enjoy your stay!",
     "rolesChannelName": "roles",
-    "rolesMessage": "758174213696913480",
+    "rolesMessageId": "758174213696913480",
     "welcomeChannelName": "welcome",
 	"modRoleName": "Cubes",
-	"liveNowRoleiD": "769681704533098498",
+	"liveRoleId": "769681704533098498",
 	"roles": {
 			"0️⃣": "Spartans",
 			"1️⃣": "Crewmates",
