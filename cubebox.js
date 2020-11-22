@@ -19,8 +19,6 @@ const cooldowns = new Discord.Collection();
 //Import command Files for command handler
 client.commands = new Discord.Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
-//Command Handler
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);
@@ -148,7 +146,9 @@ this is done to see whose Dicord Status says they are streaming.
 */
 //Twitch Integration
 
+/* This is broken, so it's commented out for now, because someone told me not to let broken code run
 client.on("presenceUpdate", (oldPresence, newPresence) => {
+	console.log(`Streaming event fired.`)
 	//On a new status update, check whether they were previously streaming and if so, remove the "live" role.
 	if (oldPresence.activities){  
 		//Check they were streaming, if so, remove the "Live" role
@@ -163,7 +163,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 		if (activity.type == "STREAMING") newPresence.user.roles.add(liveRoleId);
 	});
 });
-
+*/
 
 
 //Log in to Discord
