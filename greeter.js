@@ -14,5 +14,6 @@ module.exports = (member) => {
 		.replace(/\${rolesChannelName}/g, rolesChannel);
 
 	//Greet the new user
-    welcomeChannel.send(greetingMessage);
+	welcomeChannel.send(greetingMessage);
+	console.log(`greeted new user`)
 }
