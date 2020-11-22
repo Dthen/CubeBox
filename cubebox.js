@@ -127,7 +127,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 
 client.on('messageReactionRemove', (messageReaction, user) => {
 	try {
-		const { emojiUser, emojiRole, emojiRole } = reactionRolesHandler(messageReaction, user);
+		const { emojiUser, emojiRole, emojiRoleName } = reactionRolesHandler(messageReaction, user);
 		//Remove the role and inform the user
 		emojiUser.roles.remove(emojiRole);
 		user.send(`You are no longer one of the ${emojiRoleName}.`);
