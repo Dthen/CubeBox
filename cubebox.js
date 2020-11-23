@@ -38,7 +38,7 @@ client.once('ready', () => {
 	  			message = messageCollection.first();
 			}
 			Object.keys(roles).forEach(role => message.react(role));
-			console.log('Reacted to Roles Message.')
+			console.log('Reacting to roles message. Expect the bot to log it doing so for a few seconds.')
 		});
 });
 
@@ -106,6 +106,7 @@ twitch integration, etc., we may need a sane way of working out which we want. T
 specific messages as well, though, so this may be a non-issue.
 */
 
+
 //Adding reaction roles
 
 client.on('messageReactionAdd', (messageReaction, user) => {
@@ -132,11 +133,6 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 	}
 	catch (error) {
 		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
-		console.log(error);
-		return;
-	}
-
-});
 
 /*Twitch Integration works by checking the status of  all the members whenever one changes,
 this is done to see whose Dicord Status says they are streaming.
@@ -146,9 +142,15 @@ this is done to see whose Dicord Status says they are streaming.
 */
 //Twitch Integration
 
-/* This is broken, so it's commented out for now, because someone told me not to let broken code run
 client.on("presenceUpdate", (oldPresence, newPresence) => {
 	console.log(`Streaming event fired.`)
+    ///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
+    if (
+		!newPresence.activities ||
+		!(oldPresence && oldPresence.activities)
+	  )
+	   console.log('presenceUpdate not an activity')
+	   return;
 	//On a new status update, check whether they were previously streaming and if so, remove the "live" role.
 	if (oldPresence.activities){  
 		//Check they were streaming, if so, remove the "Live" role
@@ -157,13 +159,12 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 		});
 	}	
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
-	if (!newPresence.activities) return;
-	//If the activity is streaming, give the user the "Live" role 
+	if (!newPresence.activities) {
+		console.log(newPresnecereturn;
 	newPresence.activities.forEach(activity => {
 		if (activity.type == "STREAMING") newPresence.user.roles.add(liveRoleId);
 	});
 });
-*/
 
 
 //Log in to Discord
