@@ -133,6 +133,7 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 	}
 	catch (error) {
 		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
+	}
 
 /*Twitch Integration works by checking the status of  all the members whenever one changes,
 this is done to see whose Dicord Status says they are streaming.
@@ -143,24 +144,29 @@ this is done to see whose Dicord Status says they are streaming.
 //Twitch Integration
 
 client.on("presenceUpdate", (oldPresence, newPresence) => {
-	console.log(`Streaming event fired.`)
-    ///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
+	console.log(`PresnceUpdate event fired.`)
+	
+	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
     if (
 		!newPresence.activities ||
 		!(oldPresence && oldPresence.activities)
 	  )
 	   console.log('presenceUpdate not an activity')
 	   return;
-	//On a new status update, check whether they were previously streaming and if so, remove the "live" role.
+	
+	   //On a new status update, check whether they were previously streaming and if so, remove the "live" role.
 	if (oldPresence.activities){  
 		//Check they were streaming, if so, remove the "Live" role
 		oldPresence.activities.forEach(activity => {
 			if (activity.type == "STREAMING") oldPresence.user.roles.remove(liveRoleId);
 		});
 	}	
+	
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
-	if (!newPresence.activities) {
-		console.log(newPresnecereturn;
+	if (!newPresence.activities){
+		console.log(noNewPresence);
+		return;
+	}
 	newPresence.activities.forEach(activity => {
 		if (activity.type == "STREAMING") newPresence.user.roles.add(liveRoleId);
 	});
