@@ -134,6 +134,7 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 	catch (error) {
 		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
 	}
+});
 
 /*Twitch Integration works by checking the status of  all the members whenever one changes,
 this is done to see whose Dicord Status says they are streaming.
@@ -142,7 +143,7 @@ this is done to see whose Dicord Status says they are streaming.
  whether or not a stream has gone offline. This is done so the "Live" can be removed. 
 */
 //Twitch Integration
-
+/*
 client.on("presenceUpdate", (oldPresence, newPresence) => {
 	console.log(`PresnceUpdate event fired.`)
 	
@@ -151,9 +152,10 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 		!newPresence.activities ||
 		!(oldPresence && oldPresence.activities)
 	  )
-	   console.log('presenceUpdate not an activity')
-	   return;
-	
+		{	
+			console.log('presenceUpdate not an activity')
+			return;
+		}
 	   //On a new status update, check whether they were previously streaming and if so, remove the "live" role.
 	if (oldPresence.activities){  
 		//Check they were streaming, if so, remove the "Live" role
@@ -164,14 +166,14 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 	
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
 	if (!newPresence.activities){
-		console.log(noNewPresence);
+		console.log('noNewPresence');
 		return;
 	}
 	newPresence.activities.forEach(activity => {
 		if (activity.type == "STREAMING") newPresence.user.roles.add(liveRoleId);
 	});
 });
-
+*/
 
 //Log in to Discord
 client.login(process.env.token);

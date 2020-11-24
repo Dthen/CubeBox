@@ -11,14 +11,14 @@
 	"roles": {
 			"0️⃣": "Spartans",
 			"1️⃣": "Crewmates",
-			"2️⃣": "Adventurers",
+			"🎲": "Adventurers",
 			"3️⃣": "Agents",
 			"4️⃣": "Exiles",
 			"5️⃣": "Survivors",
 			"6️⃣": "Operators",
-			"7️⃣": "Minecrafters", 
+			"⛏️": "Minecrafters", 
 			"👻": "Ghost Hunters",
 			"⚽": "Rocketeers",
-			"🚀": "Commanders"
+			"🪐": "Commanders"
          }
 }
