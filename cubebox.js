@@ -42,7 +42,7 @@ client.once('ready', () => {
 				if (existingReaction && existingReaction.me) return;
 				message.react(role)
 			});
-			console.log('Reacting to roles message. Expect the bot to log it doing so for a few seconds.')
+			console.log('Reacting to roles message. Expect the bot to log it doing so for a few seconds if it hasn\'t already reacted.')
 		})
 		.catch(console.log)
 });
@@ -120,11 +120,15 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 		//Add the role and inform the user
 		emojiUser.roles.add(emojiRole);
 		user.send(`You are now one of the ${emojiRoleName}.`);}
-		catch (error) { try{
-			if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
-				console.log(error);
-				return;
-	}	catch (othererror){console.log(othererror)}
+		catch (error) { 
+			try {
+					if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
+						console.log(error);
+						return;
+			}	
+			catch (othererror){
+				console.log(othererror)
+			}
 	}	
 
 });

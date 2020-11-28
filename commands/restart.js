@@ -11,6 +11,10 @@ module.exports = {
 		if (!message.member.roles.cache.has(modRole.id)) {
 			return message.reply('You\'re not allowed to do that.')
 		}
-		message.reply('Restarting ...').then(() => {process.exitCode = 1});
+		message.reply('Restarting ...').then(() => {
+			console.log('Ready to exit...');
+			message.client.destroy();
+			process.exit();
+		  });
 	}
 }
