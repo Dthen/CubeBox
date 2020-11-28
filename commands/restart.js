@@ -1,4 +1,4 @@
-const { modRoleName } = require('../config.json');
+const { modRoleName } = require('../config/config.json');
 module.exports = {
 	name: 'restart',
 	description: 'Restarts the bot',

@@ -9,9 +9,9 @@ require('dotenv').config();
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
 //import internal dependencies
-const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config.json');
-const greeter = require ('./greeter.js')
-const reactionRolesHandler = require('./reactionRolesHandler.js');
+const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config/config.json');
+const greeter = require ('./handlers/greeter.js')
+const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
 
 //Declare constants for command handler
 const cooldowns = new Discord.Collection();
@@ -35,11 +35,16 @@ client.once('ready', () => {
 		.then(messageCollection => {
 			let message = messageCollection;
 			if (messageCollection instanceof Discord.TextChannel) {
-	  			message = messageCollection.first();
+				message = messageCollection.first();  
 			}
-			Object.keys(roles).forEach(role => message.react(role));
+			Object.keys(roles).forEach(role => {
+				let existingReaction = message.reactions.cache.find( reaction => reaction.emoji.name === role)
+				if (existingReaction && existingReaction.me) return;
+				message.react(role)
+			});
 			console.log('Reacting to roles message. Expect the bot to log it doing so for a few seconds.')
-		});
+		})
+		.catch(console.log)
 });
 
 
@@ -115,14 +120,15 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 		//Add the role and inform the user
 		emojiUser.roles.add(emojiRole);
 		user.send(`You are now one of the ${emojiRoleName}.`);}
-	catch (error) {
-		if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
-		console.log(error);
-		return;
-	}
+		catch (error) { try{
+			if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
+				console.log(error);
+				return;
+	}	catch (othererror){console.log(othererror)}
+	}	
 
 });
-//Removing reaction roles
+// //Removing reaction roles
 
 client.on('messageReactionRemove', (messageReaction, user) => {
 	try {

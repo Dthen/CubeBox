@@ -1,4 +1,4 @@
-const { modRoleName } = require('../config.json');
+const { modRoleName } = require('../config/config.json');
 module.exports = {
 	name: 'purge',
 	description: 'Mass-deletes messages from a channel.',
@@ -13,6 +13,6 @@ module.exports = {
 			return message.reply('You\'re not allowed to do that.')
 		}
 		//Command goes here
-		message.textchannel.bulkDelete(args);
+		message.channel.bulkDelete(args[0]);
 	}
 }

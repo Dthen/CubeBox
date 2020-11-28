@@ -1,4 +1,4 @@
-const {greeting, rolesChannelName, welcomeChannelName, } = require('./config.json');
+const {greeting, rolesChannelName, welcomeChannelName, } = require('../config/config.json');
 module.exports = (member) => {
 	console.log('running greeter.js')
 	console.log(member)
