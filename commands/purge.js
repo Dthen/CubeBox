@@ -13,5 +13,6 @@ module.exports = {
 			return message.reply('You\'re not allowed to do that.')
 		}
 		//Command goes here
+		message.textchannel.bulkDelete(args);
 	}
 }

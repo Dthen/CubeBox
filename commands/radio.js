@@ -1,4 +1,4 @@
-const { stations } = require('../radio.json');
+const { stations } = require('.cpmfog/radio.json');
 module.exports = {
 	name: 'radio',
 	description: 'Plays rado stations.',
