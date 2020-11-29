@@ -4,16 +4,12 @@ module.exports = {
 	description: `Lists all users with a specific role`,
 	cooldown: 5,
 	execute(message, args) {
-		if (!args) {
-			message.reply('You need to specificy a role, like `!role cubes`, for example.')
-			return;
-		}	
 		//Fetch role from argument
 		const role = message.guild.roles.cache.find(role => role.name.toLowerCase() === args[0].toLowerCase());
 		console.log('Fetched role from argument')
 		//Check argument is a role
 		if (!role){
-			message.reply(`Sorry ${args} is not a role;`)
+			message.reply(`Sorry ${args[0]} is not a role;`)
 			console.log ('User requested to list non-existent role')
 			return;
 		}
