@@ -1,7 +1,6 @@
 const {greeting, rolesChannelName, welcomeChannelName, } = require('../config/config.json');
 module.exports = (member) => {
 	console.log('running greeter.js')
-	console.log(member)
 
 
 	//Fetch channel IDs from names
