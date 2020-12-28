@@ -10,6 +10,7 @@ const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION',
 
 //import internal dependencies
 const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config/config.json');
+const { archiveChannels } = require('./handlers/archivist');
 const greeter = require ('./handlers/greeter.js')
 const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
 
@@ -27,14 +28,16 @@ for (const file of commandFiles) {
 client.once('ready', () => {
 	console.log('Logged in.');
 
+	archiveChannels(client.guilds.cache.first());
+
 	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
-	client.channels.fetch(rolesChannelId) 
+	client.channels.fetch(rolesChannelId)
 		.then (channel => channel.fetch())
 		.then (channel => channel.messages.fetch(rolesMessageId))
 		.then(messageCollection => {
 			let message = messageCollection;
 			if (messageCollection instanceof Discord.TextChannel) {
-				message = messageCollection.first();  
+				message = messageCollection.first();
 			}
 			Object.keys(roles).forEach(role => {
 				let existingReaction = message.reactions.cache.find( reaction => reaction.emoji.name === role)
@@ -48,7 +51,7 @@ client.once('ready', () => {
 
 
 //Greeting new members
-client.on('guildMemberAdd', greeter);	
+client.on('guildMemberAdd', greeter);
 
 //Command controller (I haven't really changed this from the example yet)
 client.on('message', message => {
@@ -106,7 +109,7 @@ client.on('message', message => {
 
 /*
 Regarding reactions. Currently these events are only used for roles, but later, when we implement polling, event management,
-twitch integration, etc., we may need a sane way of working out which we want. There is also a way to wait for reactions on 
+twitch integration, etc., we may need a sane way of working out which we want. There is also a way to wait for reactions on
 specific messages as well, though, so this may be a non-issue.
 */
 
@@ -119,19 +122,19 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 		//Add the role and inform the user
 		emojiUser.roles.add(emojiRole);
 		user.send(`You are now one of the ${emojiRoleName}.`);}
-		catch (error) { 
+		catch (error) {
 			try {
 					if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
 						console.log(error);
 						return;
-			}	
+			}
 			catch (othererror){
 				console.log(othererror)
 			}
-	}	
+	}
 
 });
-// //Removing reaction roles
+//Removing reaction roles
 
 client.on('messageReactionRemove', (messageReaction, user) => {
 	try {
@@ -149,30 +152,30 @@ client.on('messageReactionRemove', (messageReaction, user) => {
 this is done to see whose Dicord Status says they are streaming.
  If they are they are given the "Live" role.
  Checking status updates of all members whenever one changes is also used to determine
- whether or not a stream has gone offline. This is done so the "Live" can be removed. 
+ whether or not a stream has gone offline. This is done so the "Live" can be removed.
 */
 //Twitch Integration
 /*
 client.on("presenceUpdate", (oldPresence, newPresence) => {
 	console.log(`PresnceUpdate event fired.`)
-	
+
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
     if (
 		!newPresence.activities ||
 		!(oldPresence && oldPresence.activities)
 	  )
-		{	
+		{
 			console.log('presenceUpdate not an activity')
 			return;
 		}
 	   //On a new status update, check whether they were previously streaming and if so, remove the "live" role.
-	if (oldPresence.activities){  
+	if (oldPresence.activities){
 		//Check they were streaming, if so, remove the "Live" role
 		oldPresence.activities.forEach(activity => {
 			if (activity.type == "STREAMING") oldPresence.user.roles.remove(liveRoleId);
 		});
-	}	
-	
+	}
+
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
 	if (!newPresence.activities){
 		console.log('noNewPresence');
