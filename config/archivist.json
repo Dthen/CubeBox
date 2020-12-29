@@ -1,0 +1,8 @@
+{
+    "archiveCategory": "archive",
+    "expirationPeriod": {
+        "label": "one minute",
+        "duration": 60000
+    },
+    "ignoredChannels": []
+}
