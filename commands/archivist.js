@@ -1,20 +1,22 @@
-const { moveChannelToCategory } = require('../handlers/archivist');
+const { moveChannelToCategory, updateChannelInDb } = require('../handlers/archivist');
 
 module.exports = {
     name: 'archivist',
-	description: `Manage channel archival.`,
-	usage: 'set [channel name] [category name]',
+	description: 'Move channel to category for archival.',
+	usage: 'update [category]',
 	cooldown: 5,
 	execute(message, args) {
-		const [ command, ...restOfTheArgs ] = args;
-		const { guild } = message;
+		const [ command, ...parentCategoryParts ] = args;
 
-		if (command === 'set') {
-			const [channelName, ...parentCategoryParts] = restOfTheArgs;
-			const channelToUpdate = guild.channels.cache.find(channel => channel.name.toLowerCase() === channelName.toLowerCase());
-			const parentCategory = parentCategoryParts.join(' ');
+		if (command === 'update') {
+			const parentCategoryName = parentCategoryParts.join(' ');
+			const { channel } = message;
 
-			moveChannelToCategory(channelToUpdate, parentCategory);
+			if (parentCategoryName.length > 0) {
+				updateChannelInDb(channel);
+			} else {
+				moveChannelToCategory(channel, parentCategoryName);
+			}
 		}
 	},
 }

@@ -10,7 +10,13 @@ const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION',
 
 //import internal dependencies
 const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config/config.json');
-const { archiveChannels } = require('./handlers/archivist');
+const {
+	archiveChannels,
+	handleChannelCreate,
+	handleChannelDelete,
+	handleChannelUpdate,
+	init: initArchivist
+} = require('./handlers/archivist');
 const greeter = require ('./handlers/greeter.js')
 const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
 
@@ -28,7 +34,10 @@ for (const file of commandFiles) {
 client.once('ready', () => {
 	console.log('Logged in.');
 
-	archiveChannels(client.guilds.cache.first());
+	const guild = client.guilds.cache.first();
+
+	initArchivist(guild);
+	archiveChannels(guild);
 
 	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
 	client.channels.fetch(rolesChannelId)
@@ -106,6 +115,12 @@ client.on('message', message => {
 		message.reply('Error: Cubic error - dimensions not equal to 3.');
 	}
 });
+
+client.on('channelCreate', handleChannelCreate);
+
+client.on('channelDelete', handleChannelDelete);
+
+client.on('channelUpdate', handleChannelUpdate);
 
 /*
 Regarding reactions. Currently these events are only used for roles, but later, when we implement polling, event management,
