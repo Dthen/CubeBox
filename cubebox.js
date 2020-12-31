@@ -10,14 +10,7 @@ const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION',
 
 //import internal config values
 const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config/config.json');
-//Import internal handlers
-const {
-	archiveChannels,
-	handleChannelCreate,
-	handleChannelDelete,
-	handleChannelUpdate,
-	init: initArchivist
-} = require('./handlers/archivist');
+const archivist = require('./handlers/archivist');
 const greeter = require ('./handlers/greeter.js')
 const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
 
@@ -34,12 +27,10 @@ for (const file of commandFiles)
 //Log in and get going
 client.once('ready', () => {
 	console.log('Logged in.');
-/* Archival stuff, removed for now.
+
 	const guild = client.guilds.cache.first();
 
-	initArchivist(guild);
-	archiveChannels(guild);
-*/
+	archivist.init(guild);
 
 	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
 	client.channels.fetch(rolesChannelId)
@@ -66,6 +57,10 @@ client.on('guildMemberAdd', greeter);
 
 //Command controller (I haven't really changed this from the example yet)
 client.on('message', message => {
+	// Handle message event in archivist package
+	archivist.handleMessage(message);
+
+	// Continue to process command
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -118,16 +113,11 @@ client.on('message', message => {
 	}
 });
 
+client.on('channelCreate', archivist.handleChannelCreate);
 
-/* Archival stuff, temporarily disabled.
+client.on('channelDelete', archivist.handleChannelDelete);
 
-client.on('channelCreate', handleChannelCreate);
-
-client.on('channelDelete', handleChannelDelete);
-
-client.on('channelUpdate', handleChannelUpdate);
-*/
-
+client.on('channelUpdate', archivist.handleChannelUpdate);
 
 /*
 Regarding reactions. Currently these events are only used for roles, but later, when we implement polling, event management,

@@ -9,6 +9,15 @@ const db = low(adapter);
 db.defaults({ channels: [] })
     .write();
 
+const messages = {
+    archivingChannel(channelName) {
+        return `Channel "${channelName}" not updated for ${config.expirationPeriod.label}. Archiving.`;
+    },
+    unarchivingChannel(channelName) {
+        return `Channel "${channelName}" updated within the last ${config.expirationPeriod.label}. Unarchiving.`;
+    }
+};
+
 /**
  * @param {Discord.Guild} guild
  * @returns {Discord.Collection<string, Discord.TextChannel>}
@@ -112,7 +121,16 @@ const addChannelToDb = channel => {
     console.log(`Added ${channel.name} to DB.`);
 };
 
-/** @param {Discord.TextChannel} */
+/** @param {Discord.TextChannel} channel */
+const removeChannelFromDb = channel => {
+    db
+        .get('channels')
+        .remove({ id: channel.id })
+        .write();
+    console.log(`Removed ${channel.name} from DB.`);
+}
+
+/** @param {Discord.TextChannel} channel */
 const updateChannelInDb = channel => {
     const archiveCategory = getCategoryChannel(channel.guild, config.archiveCategory);
     const channelIsInArchive = channel.parentID === archiveCategory.id;
@@ -140,7 +158,7 @@ const updateChannelInDb = channel => {
 }
 
 /** @param {Discord.Guild} guild */
-const archiveChannels = guild => {
+const updateAllChannels = guild => {
     const textChannels = getTextChannels(guild);
 
     if (textChannels.size === 0) {
@@ -161,27 +179,22 @@ const archiveChannels = guild => {
                             moveChannelToCategory(
                                 channel,
                                 config.archiveCategory,
-                                `Channel "${channel.name}" not updated for ${config.expirationPeriod.label}. Archiving.`
+                                messages.archivingChannel(channel.name)
+                            );
+                        }
+                    });
+            } else {
+                checkIfChannelShouldBeUnarchived(channel)
+                    .then(channelShouldBeUnarchived => {
+                        if (channelShouldBeUnarchived) {
+                            moveChannelToCategory(
+                                channel,
+                                config.archiveCategory,
+                                messages.unarchivingChannel(channel.name)
                             );
                         }
                     });
             }
-
-            /**
-             * @todo Write "getDefaultCategoryName" function for unarchiving channels.
-             */
-
-            // checkIfChannelShouldBeUnarchived(channel)
-            //     .then(channelShouldBeUnarchived => {
-            //         if (channelShouldBeUnarchived) {
-
-            //             moveChannelToCategory(
-            //                 channel,
-            //                 '', /** @todo Turn into "getDefaultCategoryName function" */
-            //                 `Channel "${channel.name}" update in the last ${config.expirationPeriod.label}. Unarchiving.`
-            //             );
-            //         }
-            //     });
 		});
 };
 
@@ -216,6 +229,8 @@ const init = guild => {
                 updateChannelInDb(channel);
             }
         });
+
+    updateAllChannels(guild);
 };
 
 /** @param {Discord.GuildChannel} channel */
@@ -224,7 +239,7 @@ const handleChannelCreate = channel => {
         return;
 	}
 
-	// Update db record.
+    addChannelToDb(channel);
 };
 
 /** @param {Discord.GuildChannel} channel */
@@ -233,7 +248,7 @@ const handleChannelDelete = channel => {
         return;
 	}
 
-	// Delete record in db.
+	removeChannelFromDb(channel);
 };
 
 /**
@@ -245,15 +260,36 @@ const handleChannelUpdate = (oldChannel, newChannel) => {
 		return;
 	}
 
-	// Update record in db.
+	updateChannelInDb(newChannel);
+};
+
+/** @param {Discord.Message} message */
+const handleMessage = message => {
+    const { channel } = message;
+
+    if (channel.type !== 'text') {
+        return;
+    }
+
+    checkIfChannelShouldBeUnarchived(channel)
+        .then(channelShouldBeUnarchived => {
+            if (channelShouldBeUnarchived) {
+                moveChannelToCategory(
+                    channel,
+                    config.archiveCategory,
+                    messages.unarchivingChannel(channel.name)
+                );
+            }
+        });
 };
 
 module.exports = {
-    archiveChannels,
     handleChannelCreate,
     handleChannelDelete,
     handleChannelUpdate,
+    handleMessage,
     init,
     moveChannelToCategory,
+    updateAllChannels,
     updateChannelInDb,
 };
