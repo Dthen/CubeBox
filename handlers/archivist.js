@@ -47,6 +47,11 @@ const getLastMessageInChannel = channel => {
 const checkIfChannelShouldBeArchived = channel => {
     return getLastMessageInChannel(channel)
         .then(lastMessage => {
+            if (!lastMessage) {
+                console.log(`No message returned for ${channel.name}. Skipping archive check.`);
+                return false;
+            }
+
             const lastUpdated = lastMessage.editedTimestamp || lastMessage.createdTimestamp;
             const timeDiff = Date.now() - lastUpdated;
             return timeDiff >= config.expirationPeriod.duration;
@@ -57,6 +62,11 @@ const checkIfChannelShouldBeArchived = channel => {
 const checkIfChannelShouldBeUnarchived = channel => {
     return getLastMessageInChannel(channel)
         .then(lastMessage => {
+            if (!lastMessage) {
+                console.log(`No message returned for ${channel.name}. Skipping unarchive check.`);
+                return false;
+            }
+
             const lastUpdated = lastMessage.editedTimestamp || lastMessage.createdTimestamp;
             const timeDiff = Date.now() - lastUpdated;
             return timeDiff < config.expirationPeriod.duration;
@@ -110,7 +120,7 @@ const addChannelToDb = channel => {
         data.parent = channel.parent.id;
     } else {
         console.log(
-            `Channel "${associatedChannel.name}" appears to be in the "${archiveCategory.name}" category. Please set an appropriate default category.`
+            `Channel "${channel.name}" appears to be in the "${archiveCategory.name}" category. Please set an appropriate default category.`
         );
     }
 
