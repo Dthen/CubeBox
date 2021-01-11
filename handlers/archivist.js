@@ -30,6 +30,8 @@ const getTextChannels = guild => {
  * @param {Discord.TextChannel} channel
  * @returns {Promise<Discord.Message>}
  */
+
+//This is where to get CubeBox to ignore its own messages.
 const getLastMessageInChannel = channel => {
     return new Promise(resolve => {
         const { lastMessage } = channel;
@@ -75,36 +77,28 @@ const checkIfChannelShouldBeUnarchived = channel => {
 
 /**
  * @param {Discord.Guild} guild
- * @param {string} id
- */
-const getChannelById = (guild, id) => {
-    return guild.channels.cache.find(channel => channel.id === id);
-}
-
-/**
- * @param {Discord.Guild} guild
  * @param {string} category
  */
 const getCategoryChannel = (guild, category) => {
     return guild.channels.cache
         .filter(guildChannel => guildChannel.type === 'category')
-        .find(guildChannel => guildChannel.id.toLowerCase() === category.toLowerCase());
+        .find(guildChannel => guildChannel.id === category);
 }
 
 /**
  * @param {Discord.GuildChannel} channel Channel to move.
- * @param {string} parent Parent to move channel to. Name, or actual channel.
+ * @param {string} parentID ID of parent channel to move channel to.
  * @param {string} [reason]
  */
-const moveChannelToCategory = (channel, parent, reason = 'Commanded to move channel by Archivist.') => {
-    const parentChannel = getCategoryChannel(channel.guild, parent);
+const moveChannelToCategory = (channel, parentID, reason = 'Commanded to move channel by Archivist.') => {
+    const parentChannel = getCategoryChannel(channel.guild, parentID);
 
     if (!parentChannel) {
         throw new Error(`Could not find parent channel`);
     }
 
     return channel.setParent(parentChannel, { reason })
-        .then(() => console.log(reason, `Moved ${channel.name} to ${parent}.`))
+        .then(() => console.log(reason, `Moved ${channel.name} to ${parentChannel.name}.`))
 		.catch(console.error);
 };
 
@@ -119,9 +113,10 @@ const addChannelToDb = channel => {
     if (channel.parentID !== archiveCategory.id) {
         data.parent = channel.parent.id;
     } else {
-        console.log(
-            `Channel "${channel.name}" appears to be in the "${archiveCategory.name}" category. Please set an appropriate default category.`
-        );
+        let noChannelParent =  `Channel "${channel.name}" appears to be in the "${archiveCategory.name}" category. Please move "${channel.name}" to the right category.`
+        console.log(noChannelParent)
+            //This should also PM the admin role users, but for now let's just tell it to PM Dthen.
+            channel.guild.members.cache.find(member => member.id === 149619896395759616).send(noChannelParent)
     }
 
     db
@@ -168,7 +163,7 @@ const updateChannelInDb = channel => {
 }
 
 /** @param {Discord.Guild} guild */
-// This is just somethign fancy Dave added to make his automcomplete work better.
+// This is just somethign fancy Dave added to make his autocomplete work better.
 const updateAllChannels = guild => {
     const textChannels = getTextChannels(guild);
 
@@ -178,11 +173,17 @@ const updateAllChannels = guild => {
     }
 
 	textChannels
-        .filter(channel => !config.ignoredChannelIDs.some(channel.id || !config.ignoredChannelParentIDs))
+        .filter(channel => !config.ignoredChannelIDs.some(ignoredChannelID =>
+            channel.id === ignoredChannelID ||
+            channel.parent.id === ignoredChannelID
+          ))
+
+        
+        // The above two lines can be simplified.
 		.forEach(channel => {
-            if (
-                !channel.parent ||
-                channel.parent.name.toLowerCase() !== config.archiveCategoryID.toLowerCase()
+            if (!channel.parent) return
+            if (                
+                channel.parent.id !== config.archiveCategoryID
             ) {
                 checkIfChannelShouldBeArchived(channel)
                     .then(channelShouldBeArchived => {
@@ -198,9 +199,10 @@ const updateAllChannels = guild => {
                 checkIfChannelShouldBeUnarchived(channel)
                     .then(channelShouldBeUnarchived => {
                         if (channelShouldBeUnarchived) {
+                            let channelToBeUnArchived = db.get({id:channel.id}).value()
                             moveChannelToCategory(
                                 channel,
-                                config.archiveCategoryID,
+                                channelToBeUnArchived.parent,
                                 messages.unarchivingChannel(channel.name)
                             );
                         }
@@ -276,7 +278,10 @@ const handleChannelUpdate = (oldChannel, newChannel) => {
 const handleMessage = message => {
     const { channel } = message;
 
-    if (channel.type !== 'text') {
+    if (channel.type !== 'text' || !config.ignoredChannelIDs.some(ignoredChannelID =>
+        channel.id === ignoredChannelID ||
+        channel.parent.id === ignoredChannelID
+      )) {
         return;
     }
 
