@@ -163,11 +163,12 @@ const updateChannelInDb = channel => {
         return;
     }
 
-    console.log(`Channel "${channel.name}" is in the new parent channel "${channel.parent.name}". Updating db to reflect.`);
+    console.log(`Channel "${channel.name}" is in the new parent channel (category) "${channel.parent.name}". Updating db to reflect.`);
     channelInDb.assign({ parent: channel.parentID }).write();
 }
 
 /** @param {Discord.Guild} guild */
+// This is just somethign fancy Dave added to make his automcomplete work better.
 const updateAllChannels = guild => {
     const textChannels = getTextChannels(guild);
 
@@ -177,7 +178,7 @@ const updateAllChannels = guild => {
     }
 
 	textChannels
-		.filter(channel => !config.ignoredChannelIDs.includes(channel.id))
+        .filter(channel => !config.ignoredChannelIDs.some(channel.id || !config.ignoredChannelParentIDs))
 		.forEach(channel => {
             if (
                 !channel.parent ||
@@ -222,11 +223,9 @@ const init = guild => {
         .remove(channel => !textChannelIds.includes(channel.id))
         .write();
 
-    textChannelIds
-        .forEach(id => {
-            const channel = getChannelById(guild, id);
-            const channelInDb = channelsInDb.some({ id }).value();
-
+    textChannels
+        .forEach(channel => {
+            const channelInDb = channelsInDb.some({ id:channel.id }).value();
             /**
              * If a channel is on the server but not in the db,
              * write to the db.
