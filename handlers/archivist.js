@@ -88,7 +88,7 @@ const getChannelById = (guild, id) => {
 const getCategoryChannel = (guild, category) => {
     return guild.channels.cache
         .filter(guildChannel => guildChannel.type === 'category')
-        .find(guildChannel => guildChannel.name.toLowerCase() === category.toLowerCase());
+        .find(guildChannel => guildChannel.id.toLowerCase() === category.toLowerCase());
 }
 
 /**
@@ -110,7 +110,7 @@ const moveChannelToCategory = (channel, parent, reason = 'Commanded to move chan
 
 /** @param {Discord.TextChannel} channel */
 const addChannelToDb = channel => {
-    const archiveCategory = getCategoryChannel(channel.guild, config.archiveCategory);
+    const archiveCategory = getCategoryChannel(channel.guild, config.archiveCategoryID);
     const data = {
         id: channel.id,
         name: channel.name,
@@ -142,7 +142,7 @@ const removeChannelFromDb = channel => {
 
 /** @param {Discord.TextChannel} channel */
 const updateChannelInDb = channel => {
-    const archiveCategory = getCategoryChannel(channel.guild, config.archiveCategory);
+    const archiveCategory = getCategoryChannel(channel.guild, config.archiveCategoryID);
     const channelIsInArchive = channel.parentID === archiveCategory.id;
 
     /**
@@ -177,18 +177,18 @@ const updateAllChannels = guild => {
     }
 
 	textChannels
-		.filter(channel => !config.ignoredChannels.includes(channel.name))
+		.filter(channel => !config.ignoredChannelIDs.includes(channel.id))
 		.forEach(channel => {
             if (
                 !channel.parent ||
-                channel.parent.name.toLowerCase() !== config.archiveCategory.toLowerCase()
+                channel.parent.name.toLowerCase() !== config.archiveCategoryID.toLowerCase()
             ) {
                 checkIfChannelShouldBeArchived(channel)
                     .then(channelShouldBeArchived => {
                         if (channelShouldBeArchived) {
                             moveChannelToCategory(
                                 channel,
-                                config.archiveCategory,
+                                config.archiveCategoryID,
                                 messages.archivingChannel(channel.name)
                             );
                         }
@@ -199,7 +199,7 @@ const updateAllChannels = guild => {
                         if (channelShouldBeUnarchived) {
                             moveChannelToCategory(
                                 channel,
-                                config.archiveCategory,
+                                config.archiveCategoryID,
                                 messages.unarchivingChannel(channel.name)
                             );
                         }
@@ -286,7 +286,7 @@ const handleMessage = message => {
             if (channelShouldBeUnarchived) {
                 moveChannelToCategory(
                     channel,
-                    config.archiveCategory,
+                    config.archiveCategoryID,
                     messages.unarchivingChannel(channel.name)
                 );
             }
