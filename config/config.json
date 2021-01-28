@@ -2,11 +2,13 @@
 	"rolesChannelId" : "758174068322074634",
 	"botId": "758825122151792711",
     "prefix": "!",
-    "greeting": "Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${rolesChannelName} channel to let us know what games you play. Enjoy your stay!",
-    "rolesChannelName": "roles",
-    "rolesMessageId": "758174213696913480",
-    "welcomeChannelName": "welcome",
+	"greeting": "${greeterRoleName}, we have a new arrival! \n Hi ${member}. Welcome to the Purple Cubes Discord server. Head over to the ${rolesChannelName} channel to let us know what games you play. Enjoy your stay!",
+	"greeterRoleName": "Greeters",
+	"grreterRoleId": "804139793939300352",
+	"rolesChannelName": "roles",
+	"rolesMessageId": "758174213696913480",
 	"modRoleName": "Cubes",
+	"rulesChannelName": "rules",
 	"liveRoleId": "769681704533098498",
 	"roles": {
 			"0️⃣": "Spartans",
@@ -24,6 +26,7 @@
 			"🪐": "Commanders",
 			"💵": "Cheapskates",
 			"🎈": "Super Monkeys",
-			"8️⃣": "Web Gamers"
+			"8️⃣": "Web Gamers",
+			"👋": "Greeters"
          }
 }
