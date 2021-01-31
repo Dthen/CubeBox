@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const FileSync = require('lowdb/adapters/FileSync');
 const low = require('lowdb');
 const config = require('../config/archivist.json');
+const getChannelById = require('./getChannelById');
 
 const adapter = new FileSync('./db/archivist.json');
 const db = low(adapter);
@@ -94,8 +95,12 @@ const moveChannelToCategory = (channel, parentID, reason = 'Commanded to move ch
     const parentChannel = getCategoryChannel(channel.guild, parentID);
 
     if (!parentChannel) {
-        throw new Error(`Could not find parent channel`);
+        const errorChannel = getChannelbyId(channel.guild, config.errorChannelID);  
+        errorChannel.reply(`Could not find parent channel for channel ${channel.name}`);
+        throw new Error(`Could not find parent channel for channel ${channel.name}`);
     }
+
+
 
     return channel.setParent(parentChannel, { reason })
         .then(() => console.log(reason, `Moved ${channel.name} to ${parentChannel.name}.`))
