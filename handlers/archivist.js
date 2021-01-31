@@ -3,7 +3,7 @@ const FileSync = require('lowdb/adapters/FileSync');
 const low = require('lowdb');
 const config = require('../config/archivist.json');
 const getChannelById = require('./getChannelById');
-
+const getLastUserMessage = require('./getLastUserMessage')
 const adapter = new FileSync('./db/archivist.json');
 const db = low(adapter);
 
@@ -27,34 +27,16 @@ const getTextChannels = guild => {
     return guild.channels.cache.filter(channel => channel.type === 'text');
 };
 
-/**
- * @param {Discord.TextChannel} channel
- * @returns {Promise<Discord.Message>}
- */
 
-//This is where to get CubeBox to ignore its own messages.
-const getLastMessageInChannel = channel => {
-    return new Promise(resolve => {
-        const { lastMessage } = channel;
-        if (lastMessage) {
-            return resolve(lastMessage);
-        }
-
-        return channel.messages
-            .fetch({ limit: 1 })
-            .then(collection => resolve(collection.first()));
-    })
-};
 
 /** @param {Discord.TextChannel} channel */
 const checkIfChannelShouldBeArchived = channel => {
-    return getLastMessageInChannel(channel)
+    return getLastUserMessage(channel)
         .then(lastMessage => {
-            if (!lastMessage) {
-                console.log(`No message returned for ${channel.name}. Skipping archive check.`);
+            if (lastMessage === 'noUserMessage') {
+                console.log(`No activity returned for ${channel.name}. Skipping archive check.`);
                 return false;
             }
-
             const lastUpdated = lastMessage.editedTimestamp || lastMessage.createdTimestamp;
             const timeDiff = Date.now() - lastUpdated;
             return timeDiff >= config.expirationPeriod.duration;
@@ -63,10 +45,10 @@ const checkIfChannelShouldBeArchived = channel => {
 
 /** @param {Discord.TextChannel} channel */
 const checkIfChannelShouldBeUnarchived = channel => {
-    return getLastMessageInChannel(channel)
+    return getLastUserMessage(channel)
         .then(lastMessage => {
-            if (!lastMessage) {
-                console.log(`No message returned for ${channel.name}. Skipping unarchive check.`);
+            if (lastMessage === 'noUserMessage') {
+                console.log(`No activity returned for ${channel.name}. Skipping unarchive check.`);
                 return false;
             }
 
@@ -95,7 +77,7 @@ const moveChannelToCategory = (channel, parentID, reason = 'Commanded to move ch
     const parentChannel = getCategoryChannel(channel.guild, parentID);
 
     if (!parentChannel) {
-        const errorChannel = getChannelbyId(channel.guild, config.errorChannelID);  
+        const errorChannel = getChannelById(channel.guild, config.errorChannelID);  
         errorChannel.reply(`Could not find parent channel for channel ${channel.name}`);
         throw new Error(`Could not find parent channel for channel ${channel.name}`);
     }
