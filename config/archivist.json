@@ -1,8 +1,10 @@
 {
-    "archiveCategory": "archive",
+    "archiveCategoryID": 782187382065070080,
     "expirationPeriod": {
-        "label": "one minute",
-        "duration": 60000
+        "label": "one week",
+        "duration": 604800000
     },
-    "ignoredChannels": []
+    "interval": 86400000,
+    "ignoredChannelIDs": [758700989032300574, 786665603167158322],
+    "errorChannelID": 805485836648448011
 }
