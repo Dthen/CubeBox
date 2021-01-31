@@ -10,7 +10,7 @@ module.exports = {
 		console.log('Fetched role from argument')
 		//Check argument is a role
 		if (args.length > 0)
-			message.rely('You can only ask to list one role at a time.')
+			message.reply('You can only ask to list one role at a time.')
 		if (!role){
 			message.reply(`Sorry, ${roleName} is not a role`);
 			console.log ('User requested to list non-existent role')
