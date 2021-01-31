@@ -5,13 +5,14 @@ module.exports = {
 	cooldown: 5,
 	execute(message, args) {
 		//Fetch role from argument
-		const role = message.guild.roles.cache.find(role => role.name.toLowerCase() === args.join(' ')toLowerCase());
+		const roleName = args.join(' ');
+		const role = message.guild.roles.cache.find(role => role.name.toLowerCase() === roleName.toLowerCase());
 		console.log('Fetched role from argument')
 		//Check argument is a role
 		if (args.length > 0)
 			message.rely('You can only ask to list one role at a time.')
 		if (!role){
-			message.reply(`Sorry, + `args.join( ' ') ` is not a role;`)
+			message.reply(`Sorry, ${roleName} is not a role`);
 			console.log ('User requested to list non-existent role')
 			return;
 		}
