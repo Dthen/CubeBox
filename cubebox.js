@@ -8,8 +8,9 @@ require('dotenv').config();
 //Create the bot's Discord client
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
-//import internal dependencies
+//import internal config values
 const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config/config.json');
+//Import internal handlers
 const {
 	archiveChannels,
 	handleChannelCreate,
@@ -26,18 +27,19 @@ const cooldowns = new Discord.Collection();
 //Import command Files for command handler
 client.commands = new Discord.Collection()
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
+for (const file of commandFiles) 
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);}
 
 //Log in and get going
 client.once('ready', () => {
 	console.log('Logged in.');
-
+/* Archival stuff, removed for now.
 	const guild = client.guilds.cache.first();
 
 	initArchivist(guild);
 	archiveChannels(guild);
+*/
 
 	//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
 	client.channels.fetch(rolesChannelId)
@@ -116,11 +118,16 @@ client.on('message', message => {
 	}
 });
 
+
+/* Archival stuff, temporarily disabled.
+
 client.on('channelCreate', handleChannelCreate);
 
 client.on('channelDelete', handleChannelDelete);
 
 client.on('channelUpdate', handleChannelUpdate);
+*/
+
 
 /*
 Regarding reactions. Currently these events are only used for roles, but later, when we implement polling, event management,
