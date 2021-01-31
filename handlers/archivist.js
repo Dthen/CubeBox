@@ -7,7 +7,8 @@ const getLastUserMessage = require('./getLastUserMessage')
 const adapter = new FileSync('./db/archivist.json');
 const db = low(adapter);
 
-db.defaults({ channels: [] })
+
+db.defaults({ timeStamp: Date.now(), channels: [] })
     .write();
 
 const messages = {
@@ -150,7 +151,6 @@ const updateChannelInDb = channel => {
 }
 
 /** @param {Discord.Guild} guild */
-// This is just somethign fancy Dave added to make his autocomplete work better.
 const updateAllChannels = guild => {
     const textChannels = getTextChannels(guild);
 
@@ -195,8 +195,12 @@ const updateAllChannels = guild => {
                         }
                     });
             }
-		});
+        });
+        db.set('timeStamp', Date.now())
+        .write()
 };
+
+
 
 /** @param {Discord.Guild} guild */
 const init = guild => {
@@ -229,6 +233,9 @@ const init = guild => {
         });
 
     updateAllChannels(guild);
+
+    setInterval(()=> updateAllChannels(guild), config.interval)
+
 };
 
 /** @param {Discord.GuildChannel} channel */
