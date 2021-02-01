@@ -35,7 +35,7 @@ const fetchLastUserMessage = (channel, options) =>
  */
 module.exports = (channel) => {
     const { lastMessage } = channel;
-    if (!isSelf(lastMessage)) {
+    if (lastMessage && !isSelf(lastMessage.author)) {
         return Promise.resolve(lastMessage);
     }
 

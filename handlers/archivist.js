@@ -97,14 +97,16 @@ const addChannelToDb = channel => {
         id: channel.id,
         name: channel.name,
     };
-
+    if (!channel.parent){
+    return        
+    }
     if (channel.parentID !== archiveCategory.id) {
         data.parent = channel.parent.id;
     } else {
         let noChannelParent =  `Channel "${channel.name}" appears to be in the "${archiveCategory.name}" category. Please move "${channel.name}" to the right category.`
         console.log(noChannelParent)
             //This should also PM the admin role users, but for now let's just tell it to PM Dthen.
-            channel.guild.members.cache.find(member => member.id === 149619896395759616).send(noChannelParent)
+            channel.guild.members.cache.find(member => member.id === "149619896395759616").send(noChannelParent)
     }
 
     db
@@ -159,18 +161,23 @@ const updateAllChannels = guild => {
         return;
     }
 
-	textChannels
-        .filter(channel => !config.ignoredChannelIDs.some(ignoredChannelID =>
-            channel.id === ignoredChannelID ||
-            channel.parent.id === ignoredChannelID
-          ))
+    const ignoredChannelIDs = [...config.ignoredChannelIDs, config.errorChannelID];
+    const isIgnoredChannel = (channel) => {
+        // channel doesn't have parent
+        // channel id is ignored
+        // or channels parent is ignored
+        return (
+            !channel.parent ||
+            ignoredChannelIDs.includes(channel.id) ||
+            ignoredChannelIDs.includes(channel.parentID)
+        );
+    }
 
-        
-        // The above two lines can be simplified.
+	textChannels
+        .filter(channel => !isIgnoredChannel(channel))
 		.forEach(channel => {
-            if (!channel.parent) return
             if (                
-                channel.parent.id !== config.archiveCategoryID
+                channel.parentID !== config.archiveCategoryID
             ) {
                 checkIfChannelShouldBeArchived(channel)
                     .then(channelShouldBeArchived => {
@@ -186,12 +193,14 @@ const updateAllChannels = guild => {
                 checkIfChannelShouldBeUnarchived(channel)
                     .then(channelShouldBeUnarchived => {
                         if (channelShouldBeUnarchived) {
-                            let channelToBeUnArchived = db.get({id:channel.id}).value()
-                            moveChannelToCategory(
-                                channel,
-                                channelToBeUnArchived.parent,
-                                messages.unarchivingChannel(channel.name)
-                            );
+                            const channelToBeUnArchived = db.get({ id: channel.id }).value();
+                            if (channelToBeUnArchived && channelToBeUnArchived.parent) {
+                                moveChannelToCategory(
+                                    channel,
+                                    channelToBeUnArchived.parent,
+                                    messages.unarchivingChannel(channel.name)
+                                );
+                            }
                         }
                     });
             }
@@ -274,7 +283,7 @@ const handleMessage = message => {
 
     if (channel.type !== 'text' || !config.ignoredChannelIDs.some(ignoredChannelID =>
         channel.id === ignoredChannelID ||
-        channel.parent.id === ignoredChannelID
+        channel.parentID === ignoredChannelID
       )) {
         return;
     }
