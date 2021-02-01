@@ -11,6 +11,18 @@ const db = low(adapter);
 db.defaults({ timeStamp: Date.now(), channels: [] })
     .write();
 
+const ignoredChannelIDs = [...config.ignoredChannelIDs, config.errorChannelID];
+const isIgnoredChannel = (channel) => {
+    // channel doesn't have parent
+    // channel id is ignored
+    // or channels parent is ignored
+    return (
+        !channel.parent ||
+        ignoredChannelIDs.includes(channel.id) ||
+        ignoredChannelIDs.includes(channel.parentID)
+    );
+};
+
 const messages = {
     archivingChannel(channelName) {
         return `Channel "${channelName}" not updated for ${config.expirationPeriod.label}. Archiving.`;
@@ -161,18 +173,6 @@ const updateAllChannels = guild => {
         return;
     }
 
-    const ignoredChannelIDs = [...config.ignoredChannelIDs, config.errorChannelID];
-    const isIgnoredChannel = (channel) => {
-        // channel doesn't have parent
-        // channel id is ignored
-        // or channels parent is ignored
-        return (
-            !channel.parent ||
-            ignoredChannelIDs.includes(channel.id) ||
-            ignoredChannelIDs.includes(channel.parentID)
-        );
-    }
-
 	textChannels
         .filter(channel => !isIgnoredChannel(channel))
 		.forEach(channel => {
@@ -281,21 +281,21 @@ const handleChannelUpdate = (oldChannel, newChannel) => {
 const handleMessage = message => {
     const { channel } = message;
 
-    if (channel.type !== 'text' || !config.ignoredChannelIDs.some(ignoredChannelID =>
-        channel.id === ignoredChannelID ||
-        channel.parentID === ignoredChannelID
-      )) {
+    if (channel.type != 'text' || isIgnoredChannel(channel)) {
         return;
     }
 
     checkIfChannelShouldBeUnarchived(channel)
         .then(channelShouldBeUnarchived => {
             if (channelShouldBeUnarchived) {
-                moveChannelToCategory(
-                    channel,
-                    config.archiveCategoryID,
-                    messages.unarchivingChannel(channel.name)
-                );
+                const channelToBeUnArchived = db.get({ id: channel.id }).value();
+                if (channelToBeUnArchived && channelToBeUnArchived.parent) {
+                    moveChannelToCategory(
+                        channel,
+                        channelToBeUnArchived.parent,
+                        messages.unarchivingChannel(channel.name)
+                    );
+                }
             }
         });
 };
