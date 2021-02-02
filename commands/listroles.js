@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 module.exports = {
 	name: 'roles',
+	aliases: ['list'],
 	description: `Lists all users with a specific role`,
 	cooldown: 5,
 	execute(message, args) {
@@ -9,8 +10,6 @@ module.exports = {
 		const role = message.guild.roles.cache.find(role => role.name.toLowerCase() === roleName.toLowerCase());
 		console.log('Fetched role from argument')
 		//Check argument is a role
-		if (args.length > 0)
-			message.reply('You can only ask to list one role at a time.')
 		if (!role){
 			message.reply(`Sorry, ${roleName} is not a role`);
 			console.log ('User requested to list non-existent role')
