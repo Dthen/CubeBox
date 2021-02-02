@@ -1,7 +1,6 @@
 module.exports = {
 	name: 'bubblewrap',
 	description: 'Gives you some bubblewrap to soothe your anxiety.',
-	aliases: ['commands'],
 	usage: '[command name]',
 	cooldown: 5,
 	execute(message, args) {
