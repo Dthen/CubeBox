@@ -1,3 +1,4 @@
+const Discord = require('discord.js');
 module.exports = {
 	name: 'teams',
 	description: `Splits the users in the current voice channel into teams`,
@@ -26,8 +27,8 @@ module.exports = {
 
         const embed = new Discord.MessageEmbed()
         .setTitle (`Here is your list of teams:`)
-        .setColor(0x553E90)
         .setDescription ()
+        .setColor(0x553E90)
         .addFields(
             ...playersInTeams.map((players, index) => {
                 return {
