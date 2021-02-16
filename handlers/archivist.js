@@ -3,12 +3,11 @@ const FileSync = require('lowdb/adapters/FileSync');
 const low = require('lowdb');
 const config = require('../config/archivist.json');
 const getChannelById = require('./getChannelById');
+const tryUnarchiveChannel = require('./tryUnarchiveChannel')
 const getLastUserMessage = require('./getLastUserMessage')
 const adapter = new FileSync('./db/archivist.json');
 const db = low(adapter);
-const messageChannel = getLastUserMessage(0));
-
-// Initiate Arrchive database
+// Initiate Archive database
 db.defaults({ timeStamp: Date.now(), channels: [] })
     .write();
 
@@ -29,11 +28,11 @@ const isIgnoredChannel = (channel) => {
 
 const messages = {
     archivingChannel(channel) {
-        return (console.log(`"${channel.name}" not updated for ${config.expirationPeriod.label}. Archiving.`));
+        return (console.log(`"${channel.name}" silent for ${config.expirationPeriod.label}. Auto-Archiving.`));
     },
     unarchivingChannel(channel) {
-        console.log(`"${channel.name} has been resurrected. Unarchiving.`);
-        return(console.log(`"${channel.name}" not updated for ${config.expirationPeriod.label}. Archiving.`));
+        console.log(`"${channel.name} has been resurrected. Unarchiving.`)
+        return(true);
     }
 };
 
@@ -52,7 +51,7 @@ const checkIfChannelShouldBeArchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (lastMessage === 'noUserMessage') {
-                console.log(`#${channel.name} is empty.`);
+                console.log(`"#${channel.name}" is empty.`);
                 return false;
             }
             const lastUpdated = lastMessage.editedTimestamp || lastMessage.createdTimestamp;
@@ -66,7 +65,7 @@ const checkIfChannelShouldBeUnarchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (lastMessage === 'noUserMessage') {
-                console.log(`No activity returned for` + `\x1b[36m%s\x1b[0m', ${channel.name}.'` + `Skipping unarchive check.`);
+                console.log(`No activity returned for ${channel.name}. Skipping unarchive check.`);
                 return false;
             }
 
@@ -102,7 +101,7 @@ const moveChannelToCategory = (channel, parentID, reason = 'Commanded to move ch
 
 
 
-    return channel.setParent(parentChannel, { reason })
+    return channel.setParent(parentChannel, { reason, lockPermissions: false })
         .then(() => console.log(reason, `Moved ${channel.name} to ${parentChannel.name}.`))
 		.catch(console.error);
 };
@@ -147,27 +146,39 @@ const updateChannelInDb = channel => {
     const archiveCategory = getCategoryChannel(channel.guild, config.archiveCategoryID);
     const channelIsInArchive = channel.parentID === archiveCategory.id;
 
+
     /**
      * If channel is in archive, we have nothing to update.
      */
     if (channelIsInArchive) {
         console.log(`Channel #${channel.name} is already in archive and cannot be updated.`);
-        //This should probably check once a week or day or so just in case. Caretaking.
         return;
     }
 
-    const channelInDb = db.get('channels').find({ id: channel.id });
+    const channelInDb = db
+    .get ("channels")
+    .find ({id : channel.id})
+    
+    if (!channelInDb.value()) {
+        addChannelToDb(channel)
+    }
+   
 
     /**
      * If channel has the correct parent, we have nothing to update.
      */
-    const channelHasCorrectParent = channel.parentID === channelInDb.value().parent;
+    const channelFromDb = db.get('channels').find({ id: channel.id }).value()
+    const channelHasCorrectParent = channelFromDb && channel.parentId === channelFromDb.parent
+
+
     //if it is making this check while it's in the archive it's going to set the archive to its parent after 2 expiration periods.
     if (channelHasCorrectParent) {
-        return;
+        return
     }
-
-    console.log(`Channel "${channel.name}" is in the new parent channel (category) "${channel.parent.name}". Updating db to reflect.`);
+    
+    if (channel.parent) {console.log(`Channel "${channel.name}" is in the new parent channel (category) "${channel.parent.name}". Updating db to reflect.`)}
+    else {console.log(`Channel "${channel.name}" is not categorised.`)}
+    
     channelInDb.assign({ parent: channel.parentID }).write();
 }
 
@@ -192,24 +203,12 @@ const updateAllChannels = guild => {
                             moveChannelToCategory(
                                 channel,
                                 config.archiveCategoryID,
-                                messages.archivingChannel(channel.name)
+                                messages.archivingChannel(channel)
                             );
                         }
                     });
             } else {
-                checkIfChannelShouldBeUnarchived(channel)
-                    .then(channelShouldBeUnarchived => {
-                        if (channelShouldBeUnarchived) {
-                            const channelToBeUnArchived = db.get({ id: channel.id }).value();
-                            if (channelToBeUnArchived && channelToBeUnArchived.parent) {
-                                moveChannelToCategory(
-                                    channel,
-                                    channelToBeUnArchived.parent,
-                                    messages.unarchivingChannel(channel.name)
-                                );
-                            }
-                        }
-                    });
+                tryUnarchiveChannel(channel, db, checkIfChannelShouldBeUnarchived, moveChannelToCategory, messages.unarchivingChannel);
             }
         });
         db.set('timeStamp', Date.now())
@@ -292,19 +291,7 @@ const handleMessage = message => {
         return(false);
     }
 
-    checkIfChannelShouldBeUnarchived(channel)
-        .then(channelShouldBeUnarchived => {
-            if (channelShouldBeUnarchived) {
-                const channelToBeUnArchived = db.get({ id: channel.id }).value();
-                if (channelToBeUnArchived && channelToBeUnArchived.parent) {
-                    moveChannelToCategory(
-                        channel,
-                        channelToBeUnArchived.parent,
-                        messages.unarchivingChannel(channel.name)
-                    );
-                }
-            }
-        });
+    tryUnarchiveChannel(channel, db, checkIfChannelShouldBeUnarchived, moveChannelToCategory, messages.unarchivingChannel);
 };
 
 module.exports = {
@@ -317,3 +304,5 @@ module.exports = {
     updateAllChannels,
     updateChannelInDb,
 };
+
+

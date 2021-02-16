@@ -13,6 +13,7 @@ const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('.
 const archivist = require('./handlers/archivist');
 const greeter = require ('./handlers/greeter.js')
 const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
+const getLastUserMessage = require('./handlers/getLastUserMessage');
 
 //Declare constants for command handler
 const cooldowns = new Discord.Collection();
