@@ -6,29 +6,34 @@ const getChannelById = require('./getChannelById');
 const getLastUserMessage = require('./getLastUserMessage')
 const adapter = new FileSync('./db/archivist.json');
 const db = low(adapter);
+const messageChannel = getLastUserMessage(0));
 
-
+// Initiate Arrchive database
 db.defaults({ timeStamp: Date.now(), channels: [] })
     .write();
 
+
+// Check for ignored channels.
 const ignoredChannelIDs = [...config.ignoredChannelIDs, config.errorChannelID];
 const isIgnoredChannel = (channel) => {
     // channel doesn't have parent
     // channel id is ignored
     // or channels parent is ignored
-    return (
-        !channel.parent ||
+    if( !channel.parent ||
         ignoredChannelIDs.includes(channel.id) ||
         ignoredChannelIDs.includes(channel.parentID)
-    );
+    ) 
+    //Do not move ignored channels.
+    return console.log(`Ignored channnel ${channel.name} not moved to archive.`);
 };
 
 const messages = {
-    archivingChannel(channelName) {
-        return `Channel "${channelName}" not updated for ${config.expirationPeriod.label}. Archiving.`;
+    archivingChannel(channel) {
+        return (console.log(`"${channel.name}" not updated for ${config.expirationPeriod.label}. Archiving.`));
     },
-    unarchivingChannel(channelName) {
-        return `Channel "${channelName}" updated within the last ${config.expirationPeriod.label}. Unarchiving.`;
+    unarchivingChannel(channel) {
+        console.log(`"${channel.name} has been resurrected. Unarchiving.`);
+        return(console.log(`"${channel.name}" not updated for ${config.expirationPeriod.label}. Archiving.`));
     }
 };
 
@@ -47,7 +52,7 @@ const checkIfChannelShouldBeArchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (lastMessage === 'noUserMessage') {
-                console.log(`No activity returned for ${channel.name}. Skipping archive check.`);
+                console.log(`#${channel.name} is empty.`);
                 return false;
             }
             const lastUpdated = lastMessage.editedTimestamp || lastMessage.createdTimestamp;
@@ -61,7 +66,7 @@ const checkIfChannelShouldBeUnarchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (lastMessage === 'noUserMessage') {
-                console.log(`No activity returned for ${channel.name}. Skipping unarchive check.`);
+                console.log(`No activity returned for` + `\x1b[36m%s\x1b[0m', ${channel.name}.'` + `Skipping unarchive check.`);
                 return false;
             }
 
@@ -146,7 +151,8 @@ const updateChannelInDb = channel => {
      * If channel is in archive, we have nothing to update.
      */
     if (channelIsInArchive) {
-        console.log(`Channel "${channel.name}" is already in archive and cannot be updated.`);
+        console.log(`Channel #${channel.name} is already in archive and cannot be updated.`);
+        //This should probably check once a week or day or so just in case. Caretaking.
         return;
     }
 
@@ -156,6 +162,7 @@ const updateChannelInDb = channel => {
      * If channel has the correct parent, we have nothing to update.
      */
     const channelHasCorrectParent = channel.parentID === channelInDb.value().parent;
+    //if it is making this check while it's in the archive it's going to set the archive to its parent after 2 expiration periods.
     if (channelHasCorrectParent) {
         return;
     }
@@ -282,7 +289,7 @@ const handleMessage = message => {
     const { channel } = message;
 
     if (channel.type != 'text' || isIgnoredChannel(channel)) {
-        return;
+        return(false);
     }
 
     checkIfChannelShouldBeUnarchived(channel)
