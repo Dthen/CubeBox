@@ -15,15 +15,16 @@ db.defaults({ timeStamp: Date.now(), channels: [] })
 // Check for ignored channels.
 const ignoredChannelIDs = [...config.ignoredChannelIDs, config.errorChannelID];
 const isIgnoredChannel = (channel) => {
-    // channel doesn't have parent
-    // channel id is ignored
-    // or channels parent is ignored
-    if( !channel.parent ||
-        ignoredChannelIDs.includes(channel.id) ||
-        ignoredChannelIDs.includes(channel.parentID)
-    ) 
-    //Do not move ignored channels.
-    return console.log(`Ignored channnel ${channel.name} not moved to archive.`);
+    if (
+        ignoredChannelIDs.includes(channel.id) || // Channel is ignored directly
+        ignoredChannelIDs.includes(channel.parentID) || // Channel is ignored through parent
+        !channel.parent // Channel doesn't have a parent
+    ) {
+        console.log(`Ignored channnel ${channel.name} not moved to archive.`);
+        return true;
+    }
+
+    return false;
 };
 
 const messages = {
@@ -94,9 +95,10 @@ const moveChannelToCategory = (channel, parentID, reason = 'Commanded to move ch
     const parentChannel = getCategoryChannel(channel.guild, parentID);
 
     if (!parentChannel) {
-        const errorChannel = getChannelById(channel.guild, config.errorChannelID);  
-        errorChannel.reply(`Could not find parent channel for channel ${channel.name}`);
-        throw new Error(`Could not find parent channel for channel ${channel.name}`);
+        const errorMessage = `Could not find parent channel for channel ${channel.name}`;
+        const errorChannel = getChannelById(channel.guild, config.errorChannelID);
+        errorChannel.reply(errorMessage);
+        throw new Error(errorMessage);
     }
 
 
@@ -114,15 +116,15 @@ const addChannelToDb = channel => {
         name: channel.name,
     };
     if (!channel.parent){
-    return        
+        return
     }
     if (channel.parentID !== archiveCategory.id) {
         data.parent = channel.parent.id;
     } else {
-        let noChannelParent =  `Channel "${channel.name}" appears to be in the "${archiveCategory.name}" category. Please move "${channel.name}" to the right category.`
+        const noChannelParent =  `Channel "${channel.name}" appears to be in the "${archiveCategory.name}" category. Please move "${channel.name}" to the right category.`
         console.log(noChannelParent)
-            //This should also PM the admin role users, but for now let's just tell it to PM Dthen.
-            channel.guild.members.cache.find(member => member.id === "149619896395759616").send(noChannelParent)
+        //This should also PM the admin role users, but for now let's just tell it to PM Dthen.
+        channel.guild.members.cache.find(member => member.id === "149619896395759616").send(noChannelParent)
     }
 
     db
@@ -156,13 +158,13 @@ const updateChannelInDb = channel => {
     }
 
     const channelInDb = db
-    .get ("channels")
-    .find ({id : channel.id})
-    
+        .get('channels')
+        .find({id : channel.id});
+
     if (!channelInDb.value()) {
         addChannelToDb(channel)
     }
-   
+
 
     /**
      * If channel has the correct parent, we have nothing to update.
@@ -171,14 +173,14 @@ const updateChannelInDb = channel => {
     const channelHasCorrectParent = channelFromDb && channel.parentId === channelFromDb.parent
 
 
-    //if it is making this check while it's in the archive it's going to set the archive to its parent after 2 expiration periods.
+    /** @todo if it is making this check while it's in the archive it's going to set the archive to its parent after 2 expiration periods. */
     if (channelHasCorrectParent) {
         return
     }
-    
+
     if (channel.parent) {console.log(`Channel "${channel.name}" is in the new parent channel (category) "${channel.parent.name}". Updating db to reflect.`)}
     else {console.log(`Channel "${channel.name}" is not categorised.`)}
-    
+
     channelInDb.assign({ parent: channel.parentID }).write();
 }
 
@@ -194,7 +196,7 @@ const updateAllChannels = guild => {
 	textChannels
         .filter(channel => !isIgnoredChannel(channel))
 		.forEach(channel => {
-            if (                
+            if (
                 channel.parentID !== config.archiveCategoryID
             ) {
                 checkIfChannelShouldBeArchived(channel)
@@ -304,5 +306,3 @@ module.exports = {
     updateAllChannels,
     updateChannelInDb,
 };
-
-
