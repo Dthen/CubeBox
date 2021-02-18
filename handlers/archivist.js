@@ -28,10 +28,11 @@ const isIgnoredChannel = (channel) => {
 
 const messages = {
     archivingChannel(channel) {
-        return (console.log(`"${channel.name}" silent for ${config.expirationPeriod.label}. Auto-Archiving.`));
+        return (console.log(`"${channel.name}" quiet for ${config.expirationPeriod.label}. Auto-archiving.`));
     },
+    
     unarchivingChannel(channel) {
-        console.log(`"${channel.name} has been resurrected. Unarchiving.`)
+        console.log(`Reviving "${channel.name}".`)
         return(true);
     }
 };
@@ -51,7 +52,7 @@ const checkIfChannelShouldBeArchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (lastMessage === 'noUserMessage') {
-                console.log(`"#${channel.name}" is empty.`);
+                console.log(`No messages. "#${channel.name}" is empty.`);
                 return false;
             }
             const lastUpdated = lastMessage.editedTimestamp || lastMessage.createdTimestamp;

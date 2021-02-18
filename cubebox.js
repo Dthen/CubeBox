@@ -11,7 +11,7 @@ const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION',
 //import internal config values
 const { prefix, rolesMessageId, roles, rolesChannelId, liveRoleId } = require('./config/config.json');
 const archivist = require('./handlers/archivist');
-const greeter = require ('./handlers/greeter.js')
+const greeter = require ('./handlers/greeter.js');
 const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
 const getLastUserMessage = require('./handlers/getLastUserMessage');
 
