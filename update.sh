@@ -1,11 +1,25 @@
-echo Beginning update process
-echo running git pull 
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
+echo "Beginning update process ..."
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
+echo "running git pull ... "
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
 git pull
-echo ran git pull. Results are above. 
-echo Running npm install
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
+echo "Ran git pull."
+echo "CubeBox updated from repository."
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――" 
+echo "Running npm install." 
 npm install
-echo Ran npm install. Results are above.
-echo running pm2 restart cubebox.js.
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
+echo "Ran npm install."
+echo "Node packages updated."
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
+echo "Running 'pm2 restart cubebox.js.'"
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
 pm2 restart cubebox.js
-echo CubeBox process restarted.
-echo update process complete.
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
+echo "Ran 'pm2 restart.cubebox.js'"
+echo "CubeBox process restarted."
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
+echo "Update process complete. Please check above for errors."
+echo "――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――"
