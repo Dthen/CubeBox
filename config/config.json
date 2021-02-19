@@ -1,4 +1,5 @@
 {
+	"adminRoleName" : "Tesseracts",
 	"rolesChannelId" : "758174068322074634",
 	"botId": "758825122151792711",
     "prefix": "!",
@@ -7,7 +8,6 @@
 	"grreterRoleId": "804139793939300352",
 	"rolesChannelName": "roles",
 	"rolesMessageId": "758174213696913480",
-	"rulesChannelName": "rules",
 	"liveRoleId": "769681704533098498",
 	"roles": {
 			"0️⃣": "Spartans",
