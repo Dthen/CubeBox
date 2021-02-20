@@ -4,10 +4,10 @@ module.exports = (messageReaction, user) => {
 	if (user.bot) throw 'botEmoji';
 
     //Only respond to reactions on the correct message
-	if (messageReaction.message.id != rolesMessageId)	throw 'noRolesMessage';
+	if (messageReaction.message.id != rolesMessageId)	return;
 
 	//Check client has permission to manage roles
-    if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) throw 'noPermissions';
+    if (!messageReaction.message.guild.me.hasPermission('MANAGE_ROLES')) throw 'I am missing the "manage roles" permission';
 
 	// Fetch GuildMember from User	
 	const emojiUser = messageReaction.message.guild.members.cache.find(member => member.id === user.id);
@@ -19,7 +19,7 @@ module.exports = (messageReaction, user) => {
 	const emojiRole = messageReaction.message.guild.roles.cache.find(r => r.name === emojiRoleName);
 
 	//Don't try to change roles which don't exist
-    if (!emojiRole) throw 'notEmojiRole';
+    if (!emojiRole) return;
 
     return {emojiRole, emojiUser, emojiRoleName};
 }
