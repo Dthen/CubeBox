@@ -137,7 +137,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 		user.send(`You are now one of the ${emojiRoleName}.`);}
 		catch (error) {
 			try {
-					if (error=='noPermissions') user.send('I\'m not allowed to change your role.');
+					if (error=='noPermissions') user.send(`I\'m not allowed to change your role.`);
 						console.log(error);
 						return;
 			}
