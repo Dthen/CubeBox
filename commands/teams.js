@@ -27,7 +27,6 @@ module.exports = {
 
         const embed = new Discord.MessageEmbed()
         .setTitle (`Here is your list of teams:`)
-        .setDescription ()
         .setColor(0x553E90)
         .addFields(
             ...playersByTeams.map((players, index) => {
