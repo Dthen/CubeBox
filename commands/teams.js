@@ -1,5 +1,5 @@
 const Discord = require (`./discord.js`)
-Module.exports = {
+module.exports = {
 	name: 'teams',
 	description: `Splits the users in the current voice channel into teams`,
 	cooldown: 5,
