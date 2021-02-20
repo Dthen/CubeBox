@@ -30,7 +30,7 @@ module.exports = {
         .setDescription ()
         .setColor(0x553E90)
         .addFields(
-            ...playersInTeams.map((players, index) => {
+            ...playersByTeams.map((players, index) => {
                 return {
                     name: `Team ${index + 1}`,
                     value: players.join('\n'),
