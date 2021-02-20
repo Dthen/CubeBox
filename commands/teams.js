@@ -11,7 +11,7 @@ module.exports = {
         // Create a list of players in voice channel, ignoring deafened users and bots,
         // then shuffle that list
         const players = (message.member.voice.channel.members
-            .filter(member => !member.voice.selfDeaf || !member.user.bot))
+            .filter(member => !member.voice.selfDeaf && !member.user.bot))
             .sort(() => Math.random() - 0.5)
             
         //Divide the players into teams  
