@@ -24,7 +24,15 @@ module.exports = {
         players.forEach((player, index) => {
             playersByTeams[index % playersByTeams.length].push(player)
         } )
-
+        console.log(
+            ...playersByTeams.map((players, index) => {
+              return {
+                name: `Team ${index + 1}`,
+                value: players.join('\n'),
+                inline: true,
+              };
+            })
+          );
         const embed = new Discord.MessageEmbed()
         .setTitle (`Here is your list of teams:`)
         .setColor(0x553E90)
