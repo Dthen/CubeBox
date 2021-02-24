@@ -1,0 +1,8 @@
+{
+    "useGreeterRole": true,
+    "useRolesChannel": true,
+    "useRulesChannel": true,
+    "welcomeChannelId": "",
+    "greeting": "${greeterRoleName}, we have a new arrival! \nHi ${member}. Welcome to the Discord server. Head over to the ${rolesChannelName} and please read the ${rulesChannelName}!",
+	"greeterRoleName": "Greeters"
+}

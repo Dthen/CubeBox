@@ -1,0 +1,11 @@
+{
+    "rolesChannelId" : "",
+	"rolesChannelName": "",
+	"rolesMessageId": "",
+	"roles": {
+			"0️⃣": "role0",
+			"1️⃣": "role1",
+            "👋": "Greeters"
+			"🎲": "roleofthedice"
+         }
+        }

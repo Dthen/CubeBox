@@ -3,3 +3,10 @@ node_modules
 
 db/*
 !db/.gitkeep
+config/archivist.json
+config/greeter.json
+config/localConfig.json
+config/logging.json
+config/moderation.json
+config/reactionRoles.json
+config/twitch.json

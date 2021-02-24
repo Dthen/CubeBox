@@ -1,4 +1,5 @@
-{
+{	
+	"adminRoleName" : "Tesseracts",
 	"modRoleName" : "Cubes",
-	"rulesChannelName": "rules"
+	"rulesChannelId": "804562490994196490"
 }	
