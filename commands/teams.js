@@ -24,15 +24,7 @@ module.exports = {
         players.forEach((player, index) => {
             playersByTeams[index % playersByTeams.length].push(player)
         } )
-        console.log(
-            ...playersByTeams.map((players, index) => {
-              return {
-                name: `Team ${index + 1}`,
-                value: players.join('\n'),
-                inline: true,
-              };
-            })
-          );
+
         const embed = new Discord.MessageEmbed()
         .setTitle (`Here is your list of teams:`)
         .setColor(0x553E90)
@@ -47,7 +39,7 @@ module.exports = {
         )
     // reply wih list of users in the same voice channel divided into teams.
     message.channel.send(embed)
-    console.log('Replied with list of teams')
+    log(message.channel.author.name + ' asked for their channel to be split into ' + teams` teams.`);
 
 	},
 };

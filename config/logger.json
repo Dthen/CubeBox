@@ -1,3 +1,7 @@
 {
-    "errorChannelID": "805485836648448011"
+    "logChannelID": "805485836648448011",
+    "logToConsole": true,
+    "logToFile": true,
+    "logToChannel": true,
+    "logToAdmins": true
 }

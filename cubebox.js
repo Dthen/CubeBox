@@ -12,7 +12,7 @@ const {guildId, token} = require('./config/localConfig.json');
 const archivist = require('./handlers/archivist');
 const greeter = require ('./handlers/greeter.js');
 const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
-const getLastUserMessage = require('./handlers/getLastUserMessage');
+const log = require('./config/logger.json');
 
 //Declare constants for command handler
 const cooldowns = new Discord.Collection();
@@ -26,7 +26,7 @@ for (const file of commandFiles) {
 
 //Log in and get going
 client.once('ready', () => {
-	console.log('Logged in.');
+	log('Logged in.');
 
 	const guild = client.guilds.cache.fetch(guildId);
 	
@@ -47,14 +47,15 @@ client.once('ready', () => {
 					if (existingReaction && existingReaction.me) return;
 					message.react(role)
 				});
-			console.log('Reacting to roles message.')
-			.catch(console.log)
+			log('Reacting to roles message.')
+			.catch(log())
 		});
 });
 
 //Greeting new members
 client.on('guildMemberAdd', (member) => {
-	if (greeterOn) greeter(member)});
+	const guild = client.guilds.cache.fetch(guildId);
+	if (greeterOn) greeter(guild, member)});
 
 //Command controller (I haven't really changed this from the example yet)
 client.on('message', message => {
@@ -115,11 +116,17 @@ client.on('message', message => {
 		}
 	}});
 
-client.on('channelCreate', archivist.handleChannelCreate);
+client.on('channelCreate', (channel) => {
+	if (archivistOn) archivist.handleChannelCreate(channel);
+});
 
-client.on('channelDelete', archivist.handleChannelDelete);
+client.on('channelDelete', (channel) => {
+	if (archivistOn) archivist.handleChannelDelete(channel);
+});
 
-client.on('channelUpdate', archivist.handleChannelUpdate);
+client.on('channelUpdate', (channel) => {
+	if (archivistOn) archivist.handleChannelUpdate(channel);
+});
 
 /*
 Regarding reactions. Currently these events are only used for roles, but later, when we implement polling, event management,
@@ -131,7 +138,7 @@ specific messages as well, though, so this may be a non-issue.
 //Adding reaction roles
 
 client.on('messageReactionAdd', (messageReaction, user) => {
-	if (reactionRoles){
+	if (reactionRolesOn){
 		try {
 			const { emojiMember, emojiRole, emojiRoleName } = reactionRolesHandler(messageReaction, user);
 			//Add the role and inform the user
@@ -140,11 +147,11 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 			catch (error) {
 				try {
 						if (error=='noPermissions') user.send(`I\'m not allowed to change your role.`);
-							console.log(error);
+							log('Error: bot lacks the "manage roles" permission, or the role giving it permission is below the role it is trying to change.');
 							return;
 				}
 				catch (othererror){
-					console.log(othererror)
+					log(othererror)
 				}
 		}
 	}
@@ -152,7 +159,7 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 //Removing reaction roles
 
 client.on('messageReactionRemove', (messageReaction, user) => {
-	if (reactionRoles){
+	if (reactionRolesOn){
 	try {
 		const { emojiMember, emojiRole, emojiRoleName } = reactionRolesHandler(messageReaction, user);
 		//Remove the role and inform the user
@@ -174,7 +181,7 @@ this is done to see whose Dicord Status says they are streaming.
 //Twitch Integration
 /*
 client.on("presenceUpdate", (oldPresence, newPresence) => {
-	console.log(`PresenceUpdate event fired.`)
+	log(`PresenceUpdate event fired.`)
 
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
     if (
@@ -192,7 +199,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
 	if (!newPresence.activities){
-		console.log('noNewPresence');
+		log('noNewPresence');
 		return;
 	}
 	newPresence.activities.forEach(activity => {

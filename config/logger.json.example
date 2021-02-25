@@ -1,3 +1,7 @@
 {
-    "errorChannelID": ""
+    "errorChannelID": "",
+    "logToConsole": true,
+    "logToFile": true,
+    "logToChannel": true,
+    "logToAdmins": true
 }

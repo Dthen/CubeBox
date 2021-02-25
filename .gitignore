@@ -10,3 +10,4 @@ config/logging.json
 config/moderation.json
 config/reactionRoles.json
 config/twitch.json
+log,txt

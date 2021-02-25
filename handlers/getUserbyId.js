@@ -4,5 +4,5 @@
  */
 
 module.exports = (guild, id) => {
-    return guild.channels.cache.find(channel => channel.id === id);
+    return guild.members.cache.find(member => member.id === id);
 };

@@ -12,7 +12,7 @@ module.exports = {
 			return message.reply('You\'re not allowed to do that.')
 		}
 		message.reply('Restarting ...').then(() => {
-			console.log('Ready to exit...');
+			log('Ready to exit...');
 			message.client.destroy();
 			process.exit();
 		  });

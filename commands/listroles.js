@@ -8,11 +8,9 @@ module.exports = {
 		//Fetch role from argument
 		const roleName = args.join(' ');
 		const role = message.guild.roles.cache.find(role => role.name.toLowerCase() === roleName.toLowerCase());
-		console.log('Fetched role from argument')
 		//Check argument is a role
 		if (!role){
 			message.reply(`Sorry, ${roleName} is not a role`);
-			console.log ('User requested to list non-existent role')
 			return;
 		}
 		const embed = new Discord.MessageEmbed()
@@ -22,7 +20,7 @@ module.exports = {
 			.setColor(0x553E90)
 		// reply wih list of users with the argument role
 		message.channel.send(embed)
-		console.log('Replied with list of roles')
+		log (message.author.username + ` requested list of members with the role: ${roles}`)
 
 	},
 };
