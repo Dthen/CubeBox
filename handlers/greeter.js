@@ -1,7 +1,7 @@
 const getChannelById = require('./getChannelbyId');
 const greeterOn = require('../config/config.json');
 const {greeting, welcomeChannelId, greeterRoleName, useGreeterRole, useRulesChannel, useRolesChannel } = require('../config/greeter.json');
-const log = require('./config/logger.json');
+const log = require('./logger.js');
 
 module.exports = (guild, member) => {
 	if (greeterOn){
