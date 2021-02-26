@@ -1,8 +1,0 @@
-{
-    "commandPrefix": "!",
-	"commandHandlerOn": true,
-	"archivistOn": true,
-	"greeterOn": true,
-	"reactionRolesOn": true,
-	"loggerOn": true
-}
