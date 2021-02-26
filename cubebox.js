@@ -1,4 +1,4 @@
-﻿//Import native Node modules
+//Import native Node modules
 const fs = require('fs');
 const Discord = require('discord.js');
 
@@ -12,7 +12,8 @@ const {guildId, token} = require('./config/localConfig.json');
 const archivist = require('./handlers/archivist');
 const greeter = require ('./handlers/greeter.js');
 const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
-const log = require('./config/logger.json');
+const log = require('./handlers/logger.js');
+//hello, this is a pointless change for the sake of testing 
 
 //Declare constants for command handler
 const cooldowns = new Discord.Collection();
