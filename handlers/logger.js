@@ -2,6 +2,7 @@ const loggerOn = require('../config/config.json');
 const {logChannelID, logToConsole, logToFile, logToChannel, logToAdmins} = require('../config/logger.json');
 const getChannelById = require('./getChannelById');
 const adminRoleId = require('../config/moderation.json')
+const fs = require('fs');
 
 module.exports = (guild, error) => {
     if (loggerOn) {
