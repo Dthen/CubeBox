@@ -3,13 +3,25 @@ const {logChannelID, logToConsole, logToFile, logToChannel, logToAdmins} = requi
 const getChannelById = require('./getChannelById');
 const adminRoleId = require('../config/moderation.json')
 const fs = require('fs');
-
-module.exports = (guild, error) => {
+let guild;
+const log = (error) => {
     if (loggerOn) {
         let timestamp = new Date().toUTCString();
-        if (logToConsole) console.log(timestamp + ': ' + error);
-        if (logToFile) fs.appendFileSync('log.txt', timestamp + ': ' + error);
-        if (logToChannel) getChannelById(guild, logChannelID).reply(timestamp + ': ' + error);
-        if (logToAdmins) guild.roles.cache.fetch(adminRoleId).send(timestamp + ': ' + error);        
+        if (!error) {
+            if (logToConsole) loglog(timestamp + ': ' + error);
+            if (logToFile) fs.appendFileSync('log.txt', timestamp + ': ' + error);
+            if (logToChannel) getChannelById(guild, logChannelID).reply(timestamp + ': ' + error);
+            if (logToAdmins) guild.roles.cache.fetch(adminRoleId).send(timestamp + ': ' + error);        
+
         }
     }
+}
+
+const setGuild = (clientGuild) => {
+guild = clientGuild;
+}
+
+module.exports = {
+    log,
+    setGuild
+}

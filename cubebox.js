@@ -12,7 +12,7 @@ const {guildId, token} = require('./config/localConfig.json');
 const archivist = require('./handlers/archivist');
 const greeter = require ('./handlers/greeter.js');
 const reactionRolesHandler = require('./handlers//reactionRolesHandler.js');
-const log = require('./handlers/logger.js');
+const logger = require('./handlers/logger.js');
 //hello, this is a pointless change for the sake of testing 
 
 //Declare constants for command handler
@@ -27,10 +27,11 @@ for (const file of commandFiles) {
 
 //Log in and get going
 client.once('ready', () => {
-	log('Logged in.');
-
 	const guild = client.guilds.cache.fetch(guildId);
-	
+
+	if (loggingOn) logger.setGuild(guild);
+	logger.log('Logged in.');
+
 	if (archivistOn) archivist.init(guild);
 
 
@@ -48,9 +49,9 @@ client.once('ready', () => {
 					if (existingReaction && existingReaction.me) return;
 					message.react(role)
 				});
-			log('Reacting to roles message.')
-			.catch(log())
-		});
+				logger.log('Reacting to roles message.')
+			})
+			.catch(logger.log);
 });
 
 //Greeting new members
@@ -112,7 +113,7 @@ client.on('message', message => {
 		try {
 			command.execute(message, args);
 		} catch (error) {
-			console.error(error);
+			logger.log(error);
 			message.reply('Error: Cubic error - dimensions not equal to 3.');
 		}
 	}});
@@ -148,11 +149,11 @@ client.on('messageReactionAdd', (messageReaction, user) => {
 			catch (error) {
 				try {
 						if (error=='noPermissions') user.send(`I\'m not allowed to change your role.`);
-							log('Error: bot lacks the "manage roles" permission, or the role giving it permission is below the role it is trying to change.');
+						logger.log('Error: bot lacks the "manage roles" permission, or the role giving it permission is below the role it is trying to change.');
 							return;
 				}
 				catch (othererror){
-					log(othererror)
+					logger.log('Unknown error adding reaction roles rections. Please check yiour configs');
 				}
 		}
 	}
@@ -182,7 +183,7 @@ this is done to see whose Dicord Status says they are streaming.
 //Twitch Integration
 /*
 client.on("presenceUpdate", (oldPresence, newPresence) => {
-	log(`PresenceUpdate event fired.`)
+	log`PresenceUpdate event fired.`)
 
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
     if (
@@ -200,7 +201,7 @@ client.on("presenceUpdate", (oldPresence, newPresence) => {
 
 	///On a new status update, check whether it's an activity before we check it's a stream and if not, do nothing
 	if (!newPresence.activities){
-		log('noNewPresence');
+		log'noNewPresence');
 		return;
 	}
 	newPresence.activities.forEach(activity => {

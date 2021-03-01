@@ -1,7 +1,7 @@
 const getChannelById = require('./getChannelbyId');
 const greeterOn = require('../config/config.json');
 const {greeting, welcomeChannelId, greeterRoleName, useGreeterRole, useRulesChannel, useRolesChannel } = require('../config/greeter.json');
-const log = require('./logger.js');
+const logger = require('./logger.js');
 
 module.exports = (guild, member) => {
 	if (greeterOn){
@@ -10,7 +10,7 @@ module.exports = (guild, member) => {
 
 		//Check the channel exists
 		if (!welcomeChannel) {
-			log('Unable to greet new user: no welcome channel');
+			logger.log('Unable to greet new user: no welcome channel');
 			return;
 		}
 
@@ -36,6 +36,6 @@ module.exports = (guild, member) => {
 
 		//Greet the new user
 		welcomeChannel.send(greetingMessage);
-		log(`greeted new user: ` + member.displayName);
+		logger.log(`greeted new user: ` + member.displayName);
 	}
 }

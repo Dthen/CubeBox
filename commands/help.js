@@ -1,4 +1,5 @@
 const { prefix } = require('../config/config.json');
+const logger = require ('../handlers/logger');
 
 module.exports = {
 	name: 'help',
@@ -21,7 +22,7 @@ module.exports = {
 					message.reply('Check your DMs.');
 				})
 				.catch(error => {
-					console.error(`Could not send help DM to ${message.author.tag}.\n`, error);
+					logger.log(`Could not send help DM to ${message.author.tag}.\n`, error);
 					message.reply('Let me DM you.');
 				});
 		}

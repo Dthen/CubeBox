@@ -39,7 +39,7 @@ module.exports = {
         )
     // reply wih list of users in the same voice channel divided into teams.
     message.channel.send(embed)
-    log(message.channel.author.name + ' asked for their channel to be split into ' + teams` teams.`);
+    logger.log(message.channel.author.name + ' asked for their channel to be split into ' + teams` teams.`);
 
 	},
 };

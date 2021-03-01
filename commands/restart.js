@@ -1,4 +1,5 @@
 const {modRoleId, adminRoleId} = require('../config/moderation.json');
+const logger = require ('../handlers/logger');
 module.exports = {
 	name: 'restart',
 	description: 'Restarts the bot',
@@ -10,7 +11,7 @@ module.exports = {
 			return message.reply('You\'re not allowed to do that.')
 		}
 		message.reply('Restarting ...').then(() => {
-			log('Restart command issued, preparing to exit process');
+			logger.log('Restart command issued, preparing to exit process.');
 			client.destroy();
 			process.exit();
 		  });
