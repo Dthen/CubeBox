@@ -8,7 +8,7 @@ module.exports = (member) => {
 	const welcomeChannel = member.guild.channels.cache.find(r => r.name === welcomeChannelName);
 	console.log('fetching channels')
 	//Fetch greetersRole from name
-	const greetersRole = member.guild.roles.cache.fine(r => r.name === greetersRoleName)
+	const greetersRole = member.guild.roles.cache.find(r => r.name === greetersRoleName)
 
 	//Check the channel exists
 	if (!welcomeChannel || !rolesChannel) {
