@@ -1,4 +1,17 @@
-const multipliers = [second = 1, seconds=1, minutes = 60*seconds, minutes = minute, hour = minutes*60, hours = hour, day = hours*24, day = days, night = day, week = day*7, weeks = week, month = weeks*4, months = month];
+const multipliers = [
+        second = 1, seconds=1,
+        minutes = 60*seconds,
+        minutes = minute,
+        hour = minutes*60,
+        hours = hour,
+        day = hours*24,
+        day = days,
+        night = day,
+        week = day*7,
+        weeks = week,
+        month = weeks*4,
+        months = month
+];
 
 module.exports = {
 	name: 'deleteafter',
