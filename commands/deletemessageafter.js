@@ -1,17 +1,18 @@
-const multipliers = [
-        second = 1, seconds=1,
-        minutes = 60*seconds,
-        minutes = minute,
-        hour = minutes*60,
-        hours = hour,
-        day = hours*24,
-        day = days,
-        night = day,
-        week = day*7,
-        weeks = week,
-        month = weeks*4,
-        months = month
-];
+const multipliers = {
+        second: 1,
+        seconds: 1,
+        minute: 60,
+        minutes: 60,
+        hour: 60 * 60,
+        hours: 60 * 60,
+        day: 24 * 60 * 60,
+        days: 24 * 60 * 60,
+        night: 24 * 60 * 60,
+        week: 7 * 24 * 60 * 60,
+        weeks: 7 * 24 * 60 * 60,
+        month: 4 * 7 * 24 * 60 * 60,
+        months: 4 * 7 * 24 * 60 * 60
+    };    
 
 module.exports = {
 	name: 'deleteafter',
@@ -20,16 +21,16 @@ module.exports = {
     \`deletafter 30 seconds\` \n 
     \`!deleatafter 2 minute\` \n
      \`deleteafter 5 hours\` \n
-     \`deleteafter 1 day```,
-     args: [timeToWait, multiplier],
-     aliases: ['da'],
+     \`deleteafter 1 day\``,
+     args: true,
+     aliases: ['da', 'timeddelete', 'td', 'delete'],
 	cooldown: 5,
 	execute(message, args) {
         //Are the parameters valid?
         if (!isfinite(args[0]) || typeof((args[1])) !== string) return;
         //If there are none use the default.
         if (!args) timeToWait = (5*60);
-        timeToWait = args(0)*multiplier;
+        timeToWait = args[0]*(multipliers.names[args[1]]);
         setTimeout(() => { message.delete(); }, timeToWait);
 	}
 }
