@@ -2,13 +2,6 @@ node_modules
 
 db/*
 !db/.gitkeep
-config/archivist.json
-config/greeter.json
-config/localConfig.json
-config/logger.json
-config/moderation.json
-config/reactionRoles.json
-config/twitch.json
-config/ radio.json
+config/**/*.json
 log.txt
 workspace.code-workspace

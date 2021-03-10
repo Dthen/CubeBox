@@ -6,7 +6,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION', 'ROLE'] });
 
 //import internal config values
-const {commandPrefix, archivistOn, reactionRolesOn, commandHandlerOn, loggingOn} = require('./config/config.json');
+const {commandPrefix, archivistOn, reactionRolesOn, commandHandlerOn, loggingOn} = require(`./config/config.json`);
 const {rolesMessageId, roles, rolesChannelId} = require('./config/reactionRoles.json');
 const {guildId, token} = require('./config/localConfig.json');
 const archivist = require('./handlers/archivist');
@@ -27,13 +27,18 @@ for (const file of commandFiles) {
 
 //Log in and get going
 client.once('ready', () => {
-	const guild = client.guilds.fetch(guildId);
 
-	if (loggingOn) archivist.setGuild(guild);
-	logger.log('Logged in.');
 
-	if (archivistOn) archivist.init(guild);
-
+	client.guilds.fetch(guildId)
+	.then(guild => {
+	  if (loggingOn) logger.setGuild(guild);
+	  log('Found Guild ID.')
+	  if (!guild) {
+		  logger('Error fetching guild ID, check config.json')
+	  }
+	  if (archivistOn) archivist.init(guild);
+	});
+  
 
 		//React to the reaction message with each of the reactions which modify roles so that the button is always present for users.
 		client.channels.fetch(rolesChannelId)
