@@ -24,7 +24,7 @@ const isIgnoredChannel = (channel) => {
         ignoredChannelIDs.includes(channel.parentID) || // Channel is ignored through parent
         !channel.parent && !config.ignoreParentlessChannels // Channel doesn't have a parent
     ) {
-        log(`Archivist: ${channel.name} is ignored by the archivist, skipping #${channelName}.`);
+       logger.log(`Archivist: ${channel.name} is ignored by the archivist, skipping #${channelName}.`)
         return true;
     }
 
@@ -33,13 +33,14 @@ const isIgnoredChannel = (channel) => {
 
 const messages = {
     archivingChannel(channel, isCommand) {
-        if (isCommand) return (log(`Archivist: ` + channel.name + ` has been archived via the \`!archive\` command.`));
-        return (log(`Archivist: #${channel.name} quiet for ${config.expirationPeriod.label}. Archiving the channel.`));
-    },
+        if (isCommand) return (console.log(`Archivist: ` + channel.name + ` has been archived via the \`!archive\` command.));
+        return logger.log('Archivist: #${channel.name} quiet for ${config.expirationPeriod.label}. Archiving the channel.);
+    }
     
     unarchivingChannel(channel) {
-        log(`Archivist: New post detected in #${channel.name}, Unarchiving the channel.`)
-        return(true);
+        channel.reply(New post detected in #${channel.name}, Unarchiving the channel.`)
+        then logger.log(`Archivist: New post detected in #${channel.name}, Unarchiving the channel.`
+         return(true);
     }
 };
 
@@ -58,7 +59,7 @@ const checkIfChannelShouldBeArchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (!lastMessage) {
-                log(`Archivist: #${channel.name} has been empty since ${channel.createdAt}`);
+               logger.log('Archivist: #${channel.name} has been empty since ${channel.createdAt}`);
                 
             }
             const lastUpdated = lastMessage.editedTimestamp || lastMessage.createdTimestamp;
@@ -72,7 +73,7 @@ const checkIfChannelShouldBeUnarchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (lastMessage === 'noUserMessage') {
-                log(`Archivist: No new posts in #${channel.name}. Skipping the channel.`);
+               logger.log('Archivist: No new posts in #${channel.name}. Skipping the channel.`);
                 return false;
             }
 
@@ -137,7 +138,7 @@ const addChannelToDb = channel => {
         .get('channels')
         .push(data)
         .write();
-    log(`Added ${channel.name} to DB.`);
+   logger.log('Added ${channel.name} to DB.`);
 };
 
 /** @param {Discord.TextChannel} channel */
@@ -146,7 +147,7 @@ const removeChannelFromDb = channel => {
         .get('channels')
         .remove({ id: channel.id })
         .write();
-    log(`Removed ${channel.name} from DB.`);
+    loggger.log(`Removed ${channel.name} from DB.`);
 }
 
 /** @param {Discord.TextChannel} channel */
@@ -159,7 +160,7 @@ const updateChannelInDb = channel => {
      * If channel is in archive, we have nothing to update.
      */
     if (channelIsInArchive) {
-        log(`Channel #${channel.name} is already in archive and cannot be updated.`);
+       logger.log('Channel #${channel.name} is already in archive and cannot be updated.`);
         return;
     }
 

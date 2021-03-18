@@ -32,9 +32,9 @@ client.once('ready', () => {
 	client.guilds.fetch(guildId)
 	.then(guild => {
 	  if (loggingOn) logger.setGuild(guild);
-	  log('Found Guild ID.')
+	  logger.log('Found Guild ID.')
 	  if (!guild) {
-		  logger('Error fetching guild ID, check config.json')
+		  logger.log('Error fetching guild ID, check config.json')
 	  }
 	  if (archivistOn) archivist.init(guild);
 	});
