@@ -7,8 +7,7 @@ const tryUnarchiveChannel = require('./tryUnarchiveChannel')
 const getLastUserMessage = require('./getLastUserMessage')
 const adapter = new FileSync('./db/archivist.json');
 const db = low(adapter);
-const archivistOn = require('../config/config.json');
-const log = require('../config/logger.json');
+const logger = require ('./logger.js');
 
 
 // Initiate Archive database
@@ -33,13 +32,13 @@ const isIgnoredChannel = (channel) => {
 
 const messages = {
     archivingChannel(channel, isCommand) {
-        if (isCommand) return (console.log(`Archivist: ` + channel.name + ` has been archived via the \`!archive\` command.));
-        return logger.log('Archivist: #${channel.name} quiet for ${config.expirationPeriod.label}. Archiving the channel.);
-    }
+        if (isCommand) return (logger.log(`Archivist: ` + channel.name + ` has been archived via the \`!archive\` command.`));
+        return logger.log(`Archivist: #${channel.name} quiet for ${config.expirationPeriod.label}. Archiving the channel.`);
+    },
     
     unarchivingChannel(channel) {
-        channel.reply(New post detected in #${channel.name}, Unarchiving the channel.`)
-        then logger.log(`Archivist: New post detected in #${channel.name}, Unarchiving the channel.`
+        channel.reply(`New post detected in #${channel.name}, Unarchiving the channel.`)
+        logger.log(`Archivist: New post detected in #${channel.name}, Unarchiving the channel.`)
          return(true);
     }
 };
@@ -59,7 +58,7 @@ const checkIfChannelShouldBeArchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (!lastMessage) {
-               logger.log('Archivist: #${channel.name} has been empty since ${channel.createdAt}`);
+               logger.log(`Archivist: #${channel.name} has been empty since ${channel.createdAt}`);
                 
             }
             const lastUpdated = lastMessage.editedTimestamp || lastMessage.createdTimestamp;
@@ -73,7 +72,7 @@ const checkIfChannelShouldBeUnarchived = channel => {
     return getLastUserMessage(channel)
         .then(lastMessage => {
             if (lastMessage === 'noUserMessage') {
-               logger.log('Archivist: No new posts in #${channel.name}. Skipping the channel.`);
+               logger.log(`Archivist: No new posts in #${channel.name}. Skipping the channel.`);
                 return false;
             }
 
@@ -89,6 +88,7 @@ const checkIfChannelShouldBeUnarchived = channel => {
  */
 const getCategoryChannel = (guild, category) => {
     return guild.channels.cache
+    /**@todo fetch not from cache in case above in case channel is uncached. */
         .filter(guildChannel => guildChannel.type === 'category')
         .find(guildChannel => guildChannel.id === category);
 }
@@ -111,13 +111,15 @@ const moveChannelToCategory = (channel, parentID, reason = 'Commanded to move ch
 
 
     return channel.setParent(parentChannel, { reason, lockPermissions: false })
-        .then(() => log(reason, `Moved ${channel.name} to ${parentChannel.name}.`))
+        .then(() => logger.log(reason, `Moved ${channel.name} to ${parentChannel.name}.`))
         .catch(console.error);
 };
 
 /** @param {Discord.TextChannel} channel */
 const addChannelToDb = channel => {
+    if (!config.archiveCategoryID) return logger.log(`Invalid archive category ID, please check archivist.json in your config folder`)
     const archiveCategory = getCategoryChannel(channel.guild, config.archiveCategoryID);
+    if (!archiveCategory) return logger.log(`No archive category, please check archivist.json in your config folder`)
     const data = {
         id: channel.id,
         name: channel.name,
@@ -129,7 +131,7 @@ const addChannelToDb = channel => {
         data.parent = channel.parent.id;
     } else {
         const noChannelParent =  `Channel "${channel.name}" appears to be in the "${archiveCategory.name}" category. Please move "${channel.name}" to the right category.`
-        log(noChannelParent)
+        logger.log(noChannelParent)
         //This should also PM the admin role users, but for now let's just tell it to PM Dthen.
         channel.guild.members.cache.find(member => member.id === "149619896395759616").send(noChannelParent)
     }
@@ -138,7 +140,7 @@ const addChannelToDb = channel => {
         .get('channels')
         .push(data)
         .write();
-   logger.log('Added ${channel.name} to DB.`);
+   logger.log(`Added ${channel.name} to DB.`);
 };
 
 /** @param {Discord.TextChannel} channel */
@@ -147,7 +149,7 @@ const removeChannelFromDb = channel => {
         .get('channels')
         .remove({ id: channel.id })
         .write();
-    loggger.log(`Removed ${channel.name} from DB.`);
+    logger.log(`Removed ${channel.name} from DB.`);
 }
 
 /** @param {Discord.TextChannel} channel */
@@ -160,7 +162,7 @@ const updateChannelInDb = channel => {
      * If channel is in archive, we have nothing to update.
      */
     if (channelIsInArchive) {
-       logger.log('Channel #${channel.name} is already in archive and cannot be updated.`);
+       logger.log(`Channel #${channel.name} is already in archive and cannot be updated.`);
         return;
     }
 
@@ -185,8 +187,8 @@ const updateChannelInDb = channel => {
         return
     }
 
-    if (channel.parent) {log(`Channel "${channel.name}" is in the new parent channel (category) "${channel.parent.name}". Updating db to reflect.`)}
-    else {log(`Channel "${channel.name}" is not categorised.`)}
+    if (channel.parent) {logger.log(`Channel "${channel.name}" is in the new parent channel (category) "${channel.parent.name}". Updating db to reflect.`)}
+    else {logger.log(`Channel "${channel.name}" is not categorised.`)}
 
     channelInDb.assign({ parent: channel.parentID }).write();
 }
@@ -196,7 +198,7 @@ const updateAllChannels = guild => {
     const textChannels = getTextChannels(guild);
 
     if (textChannels.size === 0) {
-        log('No archivable channels found.');
+        logger.log('No archivable channels found.');
         return;
     }
 

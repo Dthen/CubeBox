@@ -3,5 +3,5 @@
     "logToConsole": true,
     "logToFile": true,
     "logToChannel": true,
-    "logToAdmins": true
+    "logToAdmins": false
 }

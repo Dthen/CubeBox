@@ -7,13 +7,10 @@ let guild;
 const log = (error) => {
     if (loggerOn) {
         let timestamp = new Date().toUTCString();
-        if (!error) {
-            if (logToConsole) loglog(timestamp + ': ' + error);
+            if (logToConsole) console.log(timestamp + ': ' + error);
             if (logToFile) fs.appendFileSync('log.txt', timestamp + ': ' + error);
             if (logToChannel) getChannelById(guild, logChannelID).reply(timestamp + ': ' + error);
             if (logToAdmins) guild.roles.cache.fetch(adminRoleId).send(timestamp + ': ' + error);        
-
-        }
     }
 }
 

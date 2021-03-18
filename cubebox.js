@@ -124,15 +124,18 @@ client.on('message', message => {
 	}});
 
 client.on('channelCreate', (channel) => {
-	if (archivistOn) archivist.handleChannelCreate(channel);
+	if (!archivistOn) return;
+	archivist.handleChannelCreate(channel);
 });
 
 client.on('channelDelete', (channel) => {
-	if (archivistOn) archivist.handleChannelDelete(channel);
+	if (!archivistOn) return;
+	archivist.handleChannelDelete(channel);
 });
 
-client.on('channelUpdate', (channel) => {
-	if (archivistOn) archivist.handleChannelUpdate(channel);
+client.on('channelUpdate', (oldChannel, newChannel) => {
+	if (!archivistOn) return;
+	archivist.handleChannelUpdate(oldChannel, newChannel);
 });
 
 /*
